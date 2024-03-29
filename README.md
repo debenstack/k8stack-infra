@@ -14,6 +14,7 @@ K8 Stack for debenstack
     terraform init
     terraform apply
     ```
+
 4. Set your kubectl config by fetching your cluster name from the Terraform outputs and passing it to `doctl`
     ```bash
     doctl kubernetes cluster kubeconfig save $(terraform output -raw cluster_name)
