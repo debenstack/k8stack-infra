@@ -4,7 +4,7 @@ provider "digitalocean" {
 }
 
 data "digitalocean_kubernetes_cluster" "k8stack" {
-  name = var.cluster_name
+  name = module.k8infra.cluster_name
 }
 
 provider "kubernetes" {

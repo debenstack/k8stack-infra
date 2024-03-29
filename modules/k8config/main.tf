@@ -1,8 +1,5 @@
 terraform {
     required_providers {
-      digitalocean = {
-          source = "digitalocean/digitalocean"
-      }
       kubernetes = {
         source = "hashicorp/kubernetes"
         version = "2.27.0"
@@ -13,14 +10,16 @@ terraform {
       }
     }
 }
+
+
 locals {
-  cert_manager_values = file(format("%s%s", path.module , "/res/cert-manager-values.yaml"))
   traefik_ingress_values = file(format("%s%s", path.module , "/res/traefik-ingress-values.yaml"))
 }
 
 resource "kubernetes_secret" "cloudflare_api_credentials" {
   metadata {
     name = "cloudflare-api-credentials"
+    namespace = "cert-manager"
   }
 
   data = {
@@ -28,7 +27,6 @@ resource "kubernetes_secret" "cloudflare_api_credentials" {
     apiKey = var.cf_token
   }
 }
-
 
 
 resource "helm_release" "traefik_ingress" {
@@ -56,27 +54,20 @@ resource "helm_release" "traefik_ingress" {
   ]
 }
 
+module "certmanager" {
+  source = "./modules/certmanager"
 
-resource "helm_release" "cert_manager" {
-  name = "cert-manager"
+  cf_email = var.cf_email
+  cf_token = var.cf_token
+  cluster_name = var.cluster_name
 
-  repository = "https://charts.jetstack.io"
-  chart = "cert-manager"
-
-  atomic = true
-  create_namespace = true
-  namespace = "cert-manager"
-  version = "v1.14.4"
-
-  recreate_pods = true
-  reuse_values = true
-  force_update = true
-  cleanup_on_fail = true
-  dependency_update = true
-
-  values = [
-    "${local.cert_manager_values}"
-  ]
+  providers = {
+    helm = helm
+    kubernetes = kubernetes
+  }
 }
+
+
+
 
 
