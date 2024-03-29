@@ -16,11 +16,6 @@ terraform {
     }
 }
 
-
-locals {
-  cert_manager_values = file(format("%s%s", path.module , "/res/cert-manager-values.yaml"))
-}
-
 resource "helm_release" "cert_manager" {
   name = "cert-manager"
 
@@ -39,7 +34,7 @@ resource "helm_release" "cert_manager" {
   dependency_update = true
 
   values = [
-    "${local.cert_manager_values}"
+    file("${abspath(path.module)}/res/cert-manager-values.yaml")
   ]
 }
 
@@ -59,6 +54,10 @@ and we need a way for these configurations to be ignored
 
 # https://stackoverflow.com/questions/68511476/setup-letsencrypt-clusterissuer-with-terraform
 # https://registry.terraform.io/providers/gavinbunney/kubectl/latest/docs/resources/kubectl_manifest
+
+Another solution, and the one used below, is to use kubectl_manifest. This shows less change data in
+the terraform plan output as it just blind diffs a text file, but it does now listen to the depends_on
+attribute, so these won't be created before the cert-manager is installed
 
 **/
 
