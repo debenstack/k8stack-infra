@@ -1,0 +1,25 @@
+# All Values: https://github.com/argoproj/argo-helm/blob/main/charts/argo-cd/values.yaml
+
+crds:
+  install: true
+  keep: true
+
+#global:
+#  domain: 
+
+# Disable external authentication options
+dex:
+  enabled: false
+
+# Disable notifications
+notifications:
+  enabled: false
+
+
+applicationSet:
+  enabled: false
+
+# Run without HTTPS so that we can handle it at ingress
+server:
+  extraArgs:
+    - --insecure

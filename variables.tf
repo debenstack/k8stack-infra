@@ -16,3 +16,9 @@ variable "cf_email" {
     sensitive = true
     type = string
 }
+
+variable "domain" {
+    description = "Root Domain For Service"
+    sensitive = true
+    type = string
+}
