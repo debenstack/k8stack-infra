@@ -2,3 +2,13 @@
 crds:
   enabled: true # whether to install the CRDs
   keep: true # whether to keep the CRDs after cert-manager is removed
+
+# Updating this to include cloudflare since we use that for validation
+# Its likely to be up-to-date the fastest. Google is just an always good redundancy
+# CloudFlare DNS Servers:
+# - 1.1.1.1:53
+# - 1.0.0.1:53
+# Google DNS Servers:
+# - 8.8.8.8:53
+# - 8.8.4.4:53
+dns01RecursiveNameservers: "1.1.1.1:53,1.0.0.1:53,8.8.8.8:53,8.8.4.4:53"

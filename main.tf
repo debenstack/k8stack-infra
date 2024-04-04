@@ -31,7 +31,7 @@ module "k8config" {
     cluster_name = module.k8infra.cluster_name
     do_token = var.do_token
     cf_email = var.cf_email
-    cf_token = var.cf_email
+    cf_token = var.cf_token
     domain = var.domain
 
     providers = {

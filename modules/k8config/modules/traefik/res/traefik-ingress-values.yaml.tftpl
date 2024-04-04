@@ -53,9 +53,16 @@ ingressRoute:
     matchRule: Host(`traefik.${domain}`)
     middlewares:
       - name: traefik-dashboard-auth
+    # https://github.com/traefik/traefik-helm-chart/blob/master/traefik/templates/dashboard-ingressroute.yaml
+    # https://doc.traefik.io/traefik/v2.3/routing/providers/kubernetes-crd/#kind-ingressroute
+    tls:
+      secretName: traefik-dashboard-certificate-secret
+
+
 
 # lets not define the secret here as we want terraform to generate the random password on setup to use
 extraObjects:
+  # Generate the Middleware for authentication for the Traefik Dashboard
   - apiVersion: traefik.io/v1alpha1
     kind: Middleware
     metadata:
@@ -63,6 +70,21 @@ extraObjects:
     spec:
       basicAuth:
         secret: traefik-dashboard-auth-password
+  # Generate the Certificate from certmanager for the Traefik Dashboard
+  # https://github.com/cert-manager/cert-manager/issues/3021
+  - apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: traefik-dashboard-certificate
+      namespace: traefik
+    spec:
+      secretName: traefik-dashboard-certificate-secret
+      dnsNames:
+        - "traefik.${domain}"
+      issuerRef:
+        name: letsencrypt-dev-cluster-issuer
+        kind: ClusterIssuer
+  
 
 persistence:
   enabled: false

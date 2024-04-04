@@ -11,8 +11,12 @@ spec:
    privateKeySecretRef:
      # if not existing, it will register a new account and stores it
      name: letsencrypt-dev-cluster-issuer-pk
+   # https://cert-manager.io/docs/configuration/acme/dns01/
    solvers:
-     - dns01:
+     - #selector:
+       # dnsZones:
+       #   - 'example.com'
+       dns01:
          cloudflare:
           email: ${email}
           apiTokenSecretRef:
