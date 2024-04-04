@@ -1,0 +1,27 @@
+# https://doc.traefik.io/traefik/routing/providers/kubernetes-crd/#kind-ingressroute
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: argocd-dashboard-ingress
+  namespace: traefik
+spec:
+  entryPoints:                      # [1]
+    - websecure
+  routes:                           # [2]
+    - kind: Rule
+      match: Host(`argocd.${domain}`)
+      priority: 10
+      services:
+        - name: argocd-server
+          namespace: argocd
+          port: 80
+    - kind: Rule
+      match: Host(`argocd.${domain}`) && Headers(`Content-Type`, `application/grpc`)
+      priority: 11
+      services:
+        - name: argocd-server
+          namespace: argocd
+          port: 80
+          scheme: h2c
+  tls:                              # [12]
+    secretName: argocd-dashboard-certificate-secret

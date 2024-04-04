@@ -24,3 +24,8 @@ provider "helm" {
     )
   }
 }
+
+provider "cloudflare" {
+    email = var.cf_email
+    api_token = var.cf_token
+}

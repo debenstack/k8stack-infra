@@ -3,6 +3,10 @@ terraform {
       digitalocean = {
           source = "digitalocean/digitalocean"
       }
+      cloudflare = {
+          source = "cloudflare/cloudflare"
+          version = "~> 2.0"
+      }
     }
 }
 
@@ -37,3 +41,5 @@ resource "digitalocean_project" "k8stack-project" {
     digitalocean_kubernetes_cluster.k8stack.urn
   ]
 }
+
+
