@@ -18,6 +18,12 @@ additionalArguments:
 #  - --certificatesresolvers.cloudflare.acme.storage=/certs/acme.json
 # ^ All of these can be defined as values in this file! 
 
+providers:
+  kubernetesCRD:
+    # Allow traefik to access resources and items that are created in different namespaces
+    # https://medium.com/@reefland/traefik-share-resources-across-namespaces-ffe295789db2
+    allowCrossNamespace: true
+
 service:
   enabled: true
   type: LoadBalancer

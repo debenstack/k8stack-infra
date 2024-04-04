@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argocd-dashboard-certificate
+  namespace: traefik
+spec:
+  secretName: argocd-dashboard-certificate-secret
+  dnsNames:
+    - "argocd.${domain}"
+  issuerRef:
+    name: letsencrypt-dev-cluster-issuer
+    kind: ClusterIssuer

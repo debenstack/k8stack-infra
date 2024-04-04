@@ -11,6 +11,16 @@ terraform {
         source  = "hashicorp/helm"
         version = ">= 2.0.1"
       }
+
+      kubectl = {
+        source = "alekc/kubectl"
+        version = "2.0.4"
+      }
+
+      cloudflare = {
+          source = "cloudflare/cloudflare"
+          version = "~> 2.0"
+      }
     }
 }
 
@@ -21,6 +31,7 @@ module "k8infra" {
 
     providers = {
       digitalocean = digitalocean
+      cloudflare = cloudflare
     }
 }
 
@@ -37,6 +48,7 @@ module "k8config" {
     providers = {
       kubernetes = kubernetes
       helm=helm
+      kubectl = kubectl
     }
 
     depends_on = [ 

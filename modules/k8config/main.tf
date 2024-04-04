@@ -8,6 +8,10 @@ terraform {
         source  = "hashicorp/helm"
         version = ">= 2.0.1"
       }
+      kubectl = {
+        source = "alekc/kubectl"
+        version = "2.0.4"
+      }
     }
 }
 
@@ -21,6 +25,7 @@ module "certmanager" {
   providers = {
     helm = helm
     kubernetes = kubernetes
+    kubectl = kubectl
   }
 }
 
@@ -35,6 +40,7 @@ module "traefik" {
   providers = {
     helm = helm
     kubernetes = kubernetes
+    kubectl = kubectl
   }
 
   depends_on = [ 
@@ -48,9 +54,17 @@ module "traefik" {
 module "argocd" {
   source = "./modules/argocd"
 
+  domain = var.domain
+
   providers = {
-    helm = helm
+    helm = helm,
+    kubectl = kubectl
   }
+
+  depends_on = [
+    module.certmanager,
+    module.traefik
+  ]
 }
 
 

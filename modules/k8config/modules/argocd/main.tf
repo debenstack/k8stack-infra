@@ -5,6 +5,10 @@ terraform {
         source  = "hashicorp/helm"
         version = ">= 2.0.1"
       }
+      kubectl = {
+        source = "alekc/kubectl"
+        version = "2.0.4"
+      }
     }
 }
 
@@ -26,5 +30,28 @@ resource "helm_release" "argocd" {
 
   values = [
     file("${abspath(path.module)}/res/argocd-values.yaml")
+  ]
+}
+
+
+
+resource "kubectl_manifest" "argocd_ingress_certificate" {
+  yaml_body = templatefile("${abspath(path.module)}/res/argocd-ingress-certificate.yaml.tftpl", {
+    domain = var.domain
+  })
+
+  depends_on = [ 
+    helm_release.argocd
+  ]
+}
+
+resource "kubectl_manifest" "argocd_ingress" {
+  yaml_body = templatefile("${abspath(path.module)}/res/argocd-ingress.yaml.tftpl", {
+    domain = var.domain
+  })
+
+  depends_on = [ 
+    helm_release.argocd,
+    kubectl_manifest.argocd_ingress_certificate
   ]
 }
