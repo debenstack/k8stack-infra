@@ -1,0 +1,70 @@
+# All Values: https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml
+# Example configurations: https://github.com/traefik/traefik-helm-chart/blob/master/EXAMPLES.md
+additionalArguments:
+  - --api.dashboard=true
+  - --api=true
+  # Tell Traefik to only trust incoming headers from the Digital Ocean Load Balancers.
+  - "--entryPoints.web.proxyProtocol.trustedIPs=127.0.0.1/32,10.132.0.0/16"
+  - "--entryPoints.websecure.proxyProtocol.trustedIPs=127.0.0.1/32,10.132.0.0/16"
+  # Also whitelist the source of headers to trust,  the private IPs on the load balancers displayed on the networking page of DO.
+  - "--entryPoints.web.forwardedHeaders.trustedIPs=127.0.0.1/32,10.132.0.0/16"
+  - "--entryPoints.websecure.forwardedHeaders.trustedIPs=127.0.0.1/32,10.132.0.0/16"
+#  - --entrypoints.websecure.http.tls.certresolver=cloudflare
+#  - --entrypoints.websecure.http.tls.domains[0].main=k8.projectterris.com
+#  - --entrypoints.websecure.http.tls.domains[0].sans=*.k8.projectterris.com
+#  - --certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare
+#  - --certificatesresolvers.cloudflare.acme.email=ben@soernet.ca
+#  - --certificatesresolvers.cloudflare.acme.dnschallenge.resolvers=1.1.1.1
+#  - --certificatesresolvers.cloudflare.acme.storage=/certs/acme.json
+# ^ All of these can be defined as values in this file! 
+
+service:
+  enabled: true
+  type: LoadBalancer
+  annotations:
+    # This will tell DigitalOcean to enable the proxy protocol.
+    service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
+  spec:
+    # This is the default and should stay as cluster to keep the DO health checks working.
+    externalTrafficPolicy: Cluster
+
+ports:
+  web:
+    redirectTo:
+      port: websecure
+
+#env:
+#  - name: CF_API_EMAIL
+#    valueFrom:
+#      secretKeyRef:
+#        key: email
+#        name: cloudflare-api-credentials
+#  - name: CF_API_KEY
+#    valueFrom:
+#      secretKeyRef:
+#        key: apiKey
+#        name: cloudflare-api-credentials
+
+ingressRoute:
+  dashboard:
+    enabled: true
+    entryPoints:
+      - websecure
+    matchRule: Host(`traefik.${domain}`)
+    middlewares:
+      - name: traefik-dashboard-auth
+
+# lets not define the secret here as we want terraform to generate the random password on setup to use
+extraObjects:
+  - apiVersion: traefik.io/v1alpha1
+    kind: Middleware
+    metadata:
+      name: traefik-dashboard-auth
+    spec:
+      basicAuth:
+        secret: traefik-dashboard-auth-password
+
+persistence:
+  enabled: false
+  path: /certs
+  size: 128Mi

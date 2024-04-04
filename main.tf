@@ -32,6 +32,7 @@ module "k8config" {
     do_token = var.do_token
     cf_email = var.cf_email
     cf_token = var.cf_email
+    domain = var.domain
 
     providers = {
       kubernetes = kubernetes

@@ -10,8 +10,8 @@ terraform {
         version = ">= 2.0.1"
       }
       kubectl = {
-        source = "gavinbunney/kubectl"
-        version = "1.14.0"
+        source = "alekc/kubectl"
+        version = "2.0.4"
       }
     }
 }
@@ -36,6 +36,18 @@ resource "helm_release" "cert_manager" {
   values = [
     file("${abspath(path.module)}/res/cert-manager-values.yaml")
   ]
+}
+
+# https://cert-manager.io/docs/configuration/acme/dns01/cloudflare/
+resource "kubernetes_secret" "cloudflare_api_credentials" {
+  metadata {
+    name = "cloudflare-api-token"
+    namespace = "cert-manager"
+  }
+
+  data = {
+    api-token = var.cf_token
+  }
 }
 
 /**
@@ -67,8 +79,11 @@ resource "kubectl_manifest" "clusterissuer_letsencrypt_prod" {
     email = var.cf_email
   })
 
+  override_namespace = "cert-manager"
+
   depends_on = [ 
-    helm_release.cert_manager
+    helm_release.cert_manager,
+    kubernetes_secret.cloudflare_api_credentials
   ]
 }
 
@@ -77,8 +92,11 @@ resource "kubectl_manifest" "clusterissuer_letsencrypt_dev" {
     email = var.cf_email
   })
 
+  override_namespace = "cert-manager"
+
   depends_on = [ 
-    helm_release.cert_manager
+    helm_release.cert_manager,
+    kubernetes_secret.cloudflare_api_credentials
   ]
 }
 

@@ -16,3 +16,10 @@ See the `/res/cert-manager-values.yaml` for the override settings of the cert-ma
 * https://traefik.io/blog/secure-web-applications-with-traefik-proxy-cert-manager-and-lets-encrypt/
 * https://letsencrypt.org/docs/staging-environment/?ref=traefik.io
 * https://artifacthub.io/packages/helm/cert-manager/cert-manager
+
+## Issues with kubectl_manifest and CRDS
+* https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/kubectl_manifest
+* https://github.com/gavinbunney/terraform-provider-kubectl/issues/270
+
+## Configure Cloudflare API Token with cert-manager
+* https://cert-manager.io/docs/configuration/acme/dns01/cloudflare/
