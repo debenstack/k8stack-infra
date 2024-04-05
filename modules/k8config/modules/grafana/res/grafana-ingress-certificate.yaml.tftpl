@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: grafana-dashboard-certificate
+  namespace: traefik
+spec:
+  secretName: grafana-dashboard-certificate-secret
+  dnsNames:
+    - "grafana.${domain}"
+  issuerRef:
+    name: letsencrypt-dev-cluster-issuer
+    kind: ClusterIssuer

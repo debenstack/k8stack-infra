@@ -3,24 +3,17 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: argocd-dashboard-ingress
+  name: prometheus-dashboard-ingress
   namespace: traefik
 spec:
   entryPoints:                      # [1]
     - websecure
   routes:                           # [2]
     - kind: Rule
-      match: Host(`argocd.${domain}`)
+      match: Host(`prometheus.${domain}`)
       services:
-        - name: argocd-server
-          namespace: argocd
+        - name: prometheus-server
+          namespace: prometheus
           port: 80
-    - kind: Rule
-      match: Host(`argocd.${domain}`) && Headers(`Content-Type`, `application/grpc`)
-      services:
-        - name: argocd-server
-          namespace: argocd
-          port: 80
-          scheme: h2c
   tls:                              # [12]
-    secretName: argocd-dashboard-certificate-secret
+    secretName: prometheus-dashboard-certificate-secret

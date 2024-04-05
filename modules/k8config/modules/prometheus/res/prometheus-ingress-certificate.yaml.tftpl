@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: prometheus-dashboard-certificate
+  namespace: traefik
+spec:
+  secretName: prometheus-dashboard-certificate-secret
+  dnsNames:
+    - "prometheus.${domain}"
+  issuerRef:
+    name: letsencrypt-dev-cluster-issuer
+    kind: ClusterIssuer

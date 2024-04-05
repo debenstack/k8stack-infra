@@ -20,7 +20,6 @@ module "certmanager" {
 
   cf_email = var.cf_email
   cf_token = var.cf_token
-  cluster_name = var.cluster_name
 
   providers = {
     helm = helm
@@ -48,9 +47,6 @@ module "traefik" {
   ]
 }
 
-
-
-
 module "argocd" {
   source = "./modules/argocd"
 
@@ -65,6 +61,34 @@ module "argocd" {
     module.certmanager,
     module.traefik
   ]
+}
+
+module "prometheus" {
+  source = "./modules/prometheus"
+
+  domain = var.domain
+
+  providers = {
+    helm = helm
+    kubernetes = kubernetes
+    kubectl = kubectl
+  }
+}
+
+module "grafana" {
+  source = "./modules/grafana"
+
+  domain = var.domain
+
+  providers = {
+    helm = helm
+    kubernetes = kubernetes
+    kubectl = kubectl
+  }
+
+  depends_on = [ 
+    module.prometheus
+   ]
 }
 
 

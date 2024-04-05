@@ -15,19 +15,6 @@ terraform {
     }
 }
 
-
-/*resource "kubernetes_secret" "cloudflare_api_credentials" {
-  metadata {
-    name = "cloudflare-api-credentials"
-    namespace = "cert-manager"
-  }
-
-  data = {
-    email = var.cf_email
-    apiKey = var.cf_token
-  }
-}*/
-
 resource "helm_release" "traefik_ingress" {
   name = "traefik-ingress-controller"
 

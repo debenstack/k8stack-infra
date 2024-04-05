@@ -140,3 +140,6 @@ server:
 ```
 
 Or wherever you run the ArgoCD container, make sure to pass the argument `--insecure` to the binary
+
+# Terraform Kubernetes provider 'kubernetes_manifest' has a bug for cluster setup workflows
+Youll need to use the kubectl provider instead, and specifically the fork created by `alekc` as the original provider also had its own bug and the project has not been regularly maintained by the owner anymore

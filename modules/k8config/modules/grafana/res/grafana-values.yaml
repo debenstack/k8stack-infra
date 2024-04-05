@@ -1,0 +1,7 @@
+# All Values: https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
+
+admin:
+  existingSecret: grafana-dashboard-admin-credentials
+  userKey: username
+  passwordKey: password
+
