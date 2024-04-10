@@ -13,8 +13,8 @@ spec:
       match: Host(`grafana.${domain}`)
       priority: 10
       services:
-        - name: grafana
-          namespace: grafana
+        - name: kube-prometheus-stack-grafana 
+          namespace: prometheus
           port: 80
   tls:                              # [12]
     secretName: grafana-dashboard-certificate-secret

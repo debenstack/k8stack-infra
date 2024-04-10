@@ -48,6 +48,10 @@ resource "kubernetes_secret" "cloudflare_api_credentials" {
   data = {
     api-token = var.cf_token
   }
+
+  depends_on = [ 
+    helm_release.cert_manager
+   ]
 }
 
 /**

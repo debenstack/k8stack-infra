@@ -15,6 +15,19 @@ terraform {
     }
 }
 
+module "crds"{
+  source = "./modules/crds"
+
+  providers = {
+    kubectl = kubectl
+  }
+}
+
+resource time_sleep "wait_60_seconds" {
+  depends_on = [ module.crds ]
+  create_duration = "60s"
+}
+
 module "certmanager" {
   source = "./modules/certmanager"
 
@@ -26,6 +39,10 @@ module "certmanager" {
     kubernetes = kubernetes
     kubectl = kubectl
   }
+
+  depends_on = [ 
+    time_sleep.wait_60_seconds
+   ]
 }
 
 
@@ -73,25 +90,10 @@ module "prometheus" {
     kubernetes = kubernetes
     kubectl = kubectl
   }
-}
-
-module "grafana" {
-  source = "./modules/grafana"
-
-  domain = var.domain
-
-  providers = {
-    helm = helm
-    kubernetes = kubernetes
-    kubectl = kubectl
-  }
 
   depends_on = [ 
-    module.prometheus
+    module.certmanager,
+    module.traefik,
+    time_sleep.wait_60_seconds
    ]
 }
-
-
-
-
-

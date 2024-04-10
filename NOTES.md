@@ -143,3 +143,63 @@ Or wherever you run the ArgoCD container, make sure to pass the argument `--inse
 
 # Terraform Kubernetes provider 'kubernetes_manifest' has a bug for cluster setup workflows
 Youll need to use the kubectl provider instead, and specifically the fork created by `alekc` as the original provider also had its own bug and the project has not been regularly maintained by the owner anymore
+
+# cert-manager has a bug in how its CRDs are installed
+
+The deprecated 'installCRDS' variable is actually the only way to install the CRDs via helm. The replaced options of `crds.keep` and `crds.install` do not actually work
+
+# Install your CRDS seperatly first
+
+Not doing this is a pain in the ass when it comes to IaC and wanting to cross configure various tools within your cluster.
+
+Example: 
+
+When setting up cert-manager, you want to send metrics to Prometheus. In kubernetes you do this by enabling the following in your helm chart:
+```yaml
+prometheus:
+  enabled: false
+  servicemonitor:
+    enabled: false
+```
+But none of these settings will work. Your deployment will actually crash because the ServiceMonitor CRD is not installed, which you need to install Prometheus for first
+
+So why not setup Prometheus first ? This may work if you don't want to use TLS on the Prometheus dashboard. So you end with a loop where cert-manager needs to go first so that you can create your certs, but you need Prometheus first so that the CRDs are available to have monitoring available on your cert-manager.
+
+This and other like situations happens a bunch once you start trying to setup your observability stack within your Kubernetes cluster. With trying to use IaC you quickly end up with many race conditions because of these overlapping dependencies on eachother to create a complete observability picture.
+
+## ArgoCD _might_ need a project, before it will start sending _any_ metrics to prometheus
+Prometheus will detect argocd, and the ServiceMonitors will be created. But you will have no observable metrics, and the ArgoCD official Grafana dashboard will show no data, if you have no project deployed yet. Even for metrics completely unrelated to the project (example: Redis, and the ArgoCD web server)
+
+## kubectl_path_documents doesn't work inside modules or when depends_on is used
+https://github.com/gavinbunney/terraform-provider-kubectl/issues/61
+
+Fixed it by using terraform built in functions to replicate the functionality that kubectl_path_documents offered
+
+## CRDs are a big deal in Kubernetes. Also how to manage them and apply them is a scattered mess right now
+Theres client issues in kubectl where many large project's CRDs are now hitting the file size limits that it will allow. So you need to use the `--server-side` parameter for these to work
+
+Also kubernetes was not designed with any formal system in mind to upgrade and maintain these CRDs. There is the Operator Framework which has a system for managing versions and upgrades of CRDS, but then you can only install projects that are available on its operator hub, or those basically who support working with it
+
+The selection there is a subset
+
+## Kubernetes is still exceptionally new
+The newness is causing a lot of inconcistencies on how deployments should work
+
+There are Helm charts, that _some_ support. 
+
+There are just raw manifest files as an installation method that _some_ support
+
+There is the Operator Framework which is like a package manager but specifically just for the CRDS, that _some_ support
+
+And then there are others who the only way you can use them is by compiling their Go code which uses some framework to generate all of the manifests
+
+Then on the worst end of things (the operator framework, COUGH). When you want to install it, you have to locally install their CLI tool which then gives you the option to point it at your cluster to deploy it. There is NO other way to deploy this framework for some reason
+
+The often problem too, is various products pick various ways of doing things. Helm or having some raw manifests somewhere are the often most popular choice that is available. But it is not 100% on all resources. And this makes an annoying developer experience that is hard to have a consisten workflow with
+
+Oh not to mention, these days there is also an option where people are insisting on use ArgoCD's App-Of-Apps pattern which has some mass layering of Helm charts to work with Argo. Sometimes this is intended to be the primary way of installing the application
+
+## Helm is a Design Flaw. It deviates away from Kubernetes design and architecture
+CRDs are meant to be the powerhouse of Kubernetes. To make something Cloud/Kubernetes native. You create CRDs which are the building blocks to create and configure your application within the cluster.
+
+Helm ignores this feature, and instead focuses on trying to template out all components. It leave this to working with the Kubernetes primitive, Pod/Service/Secrets services. Which are the basics, but aren't the full capabilities of the framework. They are really just the surface, and Helm encourage people away from those advanced and powerful capabilities with its workflows.

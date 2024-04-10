@@ -65,6 +65,4 @@ resource "kubernetes_secret" "traefik_dashboard_password" {
   depends_on = [ 
     helm_release.traefik_ingress
    ]
-
-
 }

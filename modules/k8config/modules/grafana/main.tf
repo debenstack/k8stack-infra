@@ -38,7 +38,8 @@ resource "helm_release" "grafana" {
   ]
 
   depends_on = [ 
-    kubernetes_secret.grafana_dashboard_credentials
+    kubernetes_secret.grafana_dashboard_credentials,
+    kubernetes_namespace.grafana_namespace
    ]
 }
 
@@ -68,7 +69,6 @@ resource "kubernetes_secret" "grafana_dashboard_credentials" {
   depends_on = [ 
     kubernetes_namespace.grafana_namespace
    ]
-
 }
 
 resource "kubectl_manifest" "grafana_ingress_certificate" {

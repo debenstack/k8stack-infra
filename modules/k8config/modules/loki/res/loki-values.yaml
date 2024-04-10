@@ -1,0 +1,10 @@
+# All Values: https://grafana.com/docs/loki/latest/setup/install/helm/reference/
+
+# Small temp storage option
+minio:
+  enabled: true
+
+monitoring:
+  dashboards:
+    enabled: true
+    namespace: grafana

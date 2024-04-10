@@ -4,4 +4,3 @@ admin:
   existingSecret: grafana-dashboard-admin-credentials
   userKey: username
   passwordKey: password
-

@@ -23,3 +23,6 @@ See the `/res/cert-manager-values.yaml` for the override settings of the cert-ma
 
 ## Configure Cloudflare API Token with cert-manager
 * https://cert-manager.io/docs/configuration/acme/dns01/cloudflare/
+
+## Prometheus Scraping For CertManager:
+* https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/README.template.md#prometheus

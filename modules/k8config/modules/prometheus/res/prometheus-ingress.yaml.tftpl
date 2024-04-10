@@ -11,9 +11,12 @@ spec:
   routes:                           # [2]
     - kind: Rule
       match: Host(`prometheus.${domain}`)
+      middlewares:
+        - name: prometheus-dashboard-auth
+          namespace: traefik
       services:
-        - name: prometheus-server
+        - name: kube-prometheus-stack-prometheus
           namespace: prometheus
-          port: 80
+          port: 9090
   tls:                              # [12]
     secretName: prometheus-dashboard-certificate-secret
