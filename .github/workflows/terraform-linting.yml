@@ -76,7 +76,7 @@ jobs:
             commenter_input: ${{ format('{0}{1}', steps.validate.outputs.stdout, steps.validate.outputs.stderr) }}
             commenter_exitcode: ${{ steps.validate.outputs.exitcode }}
     
-  tflint:
+  tflint-job:
     name: Run TFLint Scans
     runs-on: ubuntu-latest
     steps:
@@ -89,7 +89,7 @@ jobs:
         id: tflint
         uses: terraform-linters/setup-tflint@v3
         with:
-          tflint_wrapper_enabled: true
+          tflint_wrapper: true
       - name: TFLint - Run
         run: |
           tflint --version
