@@ -172,10 +172,14 @@ Prometheus will detect argocd, and the ServiceMonitors will be created. But you 
 
 ## kubectl_path_documents doesn't work inside modules or when depends_on is used
 https://github.com/gavinbunney/terraform-provider-kubectl/issues/61
+https://github.com/gavinbunney/terraform-provider-kubectl/issues/215
 
 Fixed it by using terraform built in functions to replicate the functionality that kubectl_path_documents offered
 
 ## CRDs are a big deal in Kubernetes. Also how to manage them and apply them is a scattered mess right now
+https://medium.com/pareture/kubectl-install-crd-failed-annotations-too-long-2ebc91b40c7d
+https://github.com/kubernetes/kubernetes/issues/82292
+
 Theres client issues in kubectl where many large project's CRDs are now hitting the file size limits that it will allow. So you need to use the `--server-side` parameter for these to work
 
 Also kubernetes was not designed with any formal system in mind to upgrade and maintain these CRDs. There is the Operator Framework which has a system for managing versions and upgrades of CRDS, but then you can only install projects that are available on its operator hub, or those basically who support working with it
