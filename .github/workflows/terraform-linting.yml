@@ -76,10 +76,14 @@ jobs:
             commenter_input: ${{ format('{0}{1}', steps.validate.outputs.stdout, steps.validate.outputs.stderr) }}
             commenter_exitcode: ${{ steps.validate.outputs.exitcode }}
     
-  tflint-job:
+  tflint-scan:
     name: Run TFLint Scans
     runs-on: ubuntu-latest
     steps:
+      - name: HashiCorp - Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
       - name: TFLint - Setup
         id: tflint
         uses: terraform-linters/setup-tflint@v3
