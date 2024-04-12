@@ -80,11 +80,6 @@ jobs:
     name: Run TFLint Scans
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/cache@v2
-        name: Cache plugin dir
-        with:
-          path: ~/.tflint.d/plugins
-          key: ${{ matrix.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
       - name: TFLint - Setup
         id: tflint
         uses: terraform-linters/setup-tflint@v3
