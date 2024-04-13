@@ -81,11 +81,6 @@ jobs:
     name: Run TFLint Scans
     runs-on: ubuntu-latest
     steps:
-      - name: HashiCorp - Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-          terraform_wrapper: true
       - name: TFLint - Setup
         uses: terraform-linters/setup-tflint@v3
         with:
