@@ -2,10 +2,10 @@ name: terraform-sec-check
 
 # Only trigger, when the build workflow succeeded
 on:
-  workflow_run:
-    workflows: ["terraform-linting"]
-    types:
-      - completed
+    push:
+        branches: [ main ]
+    pull_request:
+        branches: [ main ]
       
 permissions: read-all
 

@@ -2,10 +2,10 @@ name: checkov-check-terraform
 
 # Only trigger, when the build workflow succeeded
 on:
-  workflow_run:
-    workflows: ["terraform-sec-check"]
-    types:
-      - completed
+    push:
+        branches: [ main ]
+    pull_request:
+        branches: [ main ]
       
 permissions: read-all
       
