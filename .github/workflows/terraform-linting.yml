@@ -28,11 +28,9 @@ jobs:
           terraform_wrapper: true
       - name: Terraform Format
         id: fmt
-        run: |
-          terraform fmt -check -recursive -diff
+        run: terraform fmt -check -recursive -diff
         continue-on-error: true
       - name: Post Format Comment
-        if: ${{ always() && (steps.fmt.outcome == 'success' || steps.fmt.outcome == 'failure') }}
         uses: GetTerminus/terraform-pr-commenter@v3
         with:
           commenter_type: fmt
@@ -89,15 +87,15 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: true
       - name: TFLint - Setup
-        id: tflint
         uses: terraform-linters/setup-tflint@v3
         with:
           tflint_wrapper: true
       - name: TFLint - Run
+        id: tflint
         run: |
           tflint --version
           tflint --init
-          tflint
+          tflint -f compact
       - name: Post TFLint Comment
         if: ${{ always() && (steps.tflint.outcome == 'success' || steps.tflint.outcome == 'failure') }}
         uses: GetTerminus/terraform-pr-commenter@dpr-update-commenter
