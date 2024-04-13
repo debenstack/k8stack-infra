@@ -25,6 +25,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: true
       - name: Terraform Format
         id: fmt
         run: |
@@ -46,6 +47,7 @@ jobs:
           uses: hashicorp/setup-terraform@v2
           with:
             terraform_version: ${{ env.TF_VERSION }}
+            terraform_wrapper: true
         - name: Terraform Init
           id: init
           run: terraform init -lock=false -input=false
@@ -65,6 +67,7 @@ jobs:
           uses: hashicorp/setup-terraform@v2
           with:
             terraform_version: ${{ env.TF_VERSION }}
+            terraform_wrapper: true
         - name: Terraform Validate
           id: validate
           run: terraform validate
@@ -84,6 +87,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: true
       - name: TFLint - Setup
         id: tflint
         uses: terraform-linters/setup-tflint@v3
