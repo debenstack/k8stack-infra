@@ -1,13 +1,13 @@
 terraform {
-    required_providers {
-      digitalocean = {
-          source = "digitalocean/digitalocean"
-      }
-      cloudflare = {
-          source = "cloudflare/cloudflare"
-          version = "~> 2.0"
-      }
+  required_providers {
+    digitalocean = {
+      source = "digitalocean/digitalocean"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 2.0"
+    }
+  }
 }
 
 resource "random_id" "cluster_name" {
@@ -37,7 +37,7 @@ resource "digitalocean_project" "k8stack-project" {
   description = "debenstack Kubernetes Cluster"
   purpose     = "Production debenstack Kubernetes"
   environment = "Production"
-  resources   = [
+  resources = [
     digitalocean_kubernetes_cluster.k8stack.urn
   ]
 }
