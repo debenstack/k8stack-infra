@@ -111,3 +111,16 @@ module "kyverno" {
     time_sleep.wait_60_seconds
   ]
 }
+
+module "elasticsearch" {
+  source = "./modules/elasticsearch"
+
+  providers = {
+    kubectl = kubectl
+    helm = helm
+  }
+
+  depends_on = [
+    time_sleep.wait_60_seconds
+  ]
+}
