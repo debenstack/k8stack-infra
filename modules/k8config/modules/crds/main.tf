@@ -23,3 +23,9 @@ resource "kubectl_manifest" "prometheus-crds" {
   server_side_apply = true
 }
 
+/* Kyverno */
+resource "kubectl_manifest" "kyverno-crds" {
+  for_each  = fileset("${abspath(path.module)}/res/kyverno-1.11.4", "*.yaml")
+  yaml_body = file("${abspath(path.module)}/res/kyverno-1.11.4/${each.value}")
+  server_side_apply = true
+}

@@ -97,3 +97,17 @@ module "prometheus" {
     time_sleep.wait_60_seconds
    ]
 }
+
+module "kyverno" {
+  source = "./modules/kyverno"
+
+  providers = {
+    kubectl = kubectl
+    helm = helm
+  }
+
+  depends_on = [ 
+    module.prometheus,
+    time_sleep.wait_60_seconds
+  ]
+}
