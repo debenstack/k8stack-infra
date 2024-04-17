@@ -74,6 +74,9 @@ jobs:
           with:
             terraform_version: ${{ env.TF_VERSION }}
             terraform_wrapper: true
+        - name: Terraform Init
+          id: init
+          run: terraform init -lock=false -input=false
         - name: Terraform Validate
           id: validate
           run: terraform validate
