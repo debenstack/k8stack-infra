@@ -24,8 +24,8 @@ resource "digitalocean_kubernetes_cluster" "k8stack" {
   region  = "nyc3"
   version = "1.29.1-do.0"
 
-  surge_upgrade = true 
-  auto_upgrade = true
+  surge_upgrade = true
+  auto_upgrade  = true
 
   node_pool {
     name       = "main-worker-pool"
