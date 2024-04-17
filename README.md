@@ -20,6 +20,35 @@ K8 Stack for debenstack
     doctl kubernetes cluster kubeconfig save $(terraform output -raw cluster_name)
     ```
 
+# So Whats In This Tech Stack ?
+This is my personal preference tech stack on Kubernetes. The idea to host my personal projects, and be a learning grounds for all things kubernetes. Deployment, Observability, Security, all of it. And with it, I'm learning how to effectively deploy and manage it using the best DevOps practices I can with IaC and the likes
+
+Below is a table of each piece installed in my cluster at the moment, and what roles they play within it
+
+| Service | Role Within Cluster | Notes |
+| ------- | ------------------- | ----- |
+| Cert Manager | Self-Signed Certificate Handler | Configured to work with Cloudflare and LetsEncrypt |
+| ArgoCD | Continuous Deployment | Deploy and update my personal apps |
+| Traefik | Ingress Controller | |
+| Kyverno | RBAC and Admissions Controller | |
+| Prometheus | Observability - Metrics Server | |
+| Grafana | Observability - Metrics Dashbaord | |
+| Elasticsearch | Observability - Logging Database | |
+| Kibana | Observability - Logging Dashboard | Coming Soon |
+| Vault | Secrets Manager | Coming Soon |
+
+Below now is another table of the tech being used for managing and configuring my Kubernetes cluster:
+
+| Service | Role for Cluster | Notes |
+| ------- | ---------------- | ----- |
+| Digital Ocean | Kubernetes Cluster Host | |
+| Terraform | IaC Service | |
+| Github | Code Host | |
+| Github Actions | Code Linting / Verification | |
+
+# Some Future Goals
+* Cloud Agnostic Deployment - Using terraform, be able to swap out which Cloud Provider you host this stack on with a parameter
+
 # Developer Resources
 * https://registry.terraform.io/providers/digitalocean/digitalocean/latest/docs/resources/kubernetes_cluster
 * https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#exec-plugins
