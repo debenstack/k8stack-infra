@@ -1,0 +1,112 @@
+# This is a basic workflow to help you get started with Actions
+
+name: terraform-linting
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  TF_VERSION: "1.7.5"
+  GITHUB_TOKEN: ${{ github.token }}
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  terraform-format:
+    name: Terraform Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: HashiCorp - Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: true
+      - name: Terraform Init
+        run: terraform init
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check -recursive -diff
+        continue-on-error: true
+      - name: Post Format Comment
+        uses: GetTerminus/terraform-pr-commenter@v3
+        with:
+          commenter_type: fmt
+          commenter_input: ${{ format('{0}{1}', steps.fmt.outputs.stdout, steps.fmt.outputs.stderr) }}
+          commenter_exitcode: ${{ steps.fmt.outputs.exitcode }}
+
+  terraform-init:
+      name: Terraform Init Check
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v2
+        - name: HashiCorp - Setup Terraform
+          uses: hashicorp/setup-terraform@v2
+          with:
+            terraform_version: ${{ env.TF_VERSION }}
+            terraform_wrapper: true
+        - name: Terraform Init
+          id: init
+          run: terraform init -lock=false -input=false
+        - name: Post Init Comment
+          if: ${{ always() && (steps.init.outcome == 'success' || steps.init.outcome == 'failure') }}
+          uses: GetTerminus/terraform-pr-commenter@v3
+          with:
+            commenter_type: init
+            commenter_input: ${{ format('{0}{1}', steps.init.outputs.stdout, steps.init.outputs.stderr) }}
+            commenter_exitcode: ${{ steps.init.outputs.exitcode }}
+    
+  terraform-validate:
+      name: Validate Terraform
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v2
+        - name: HashiCorp - Setup Terraform
+          uses: hashicorp/setup-terraform@v2
+          with:
+            terraform_version: ${{ env.TF_VERSION }}
+            terraform_wrapper: true
+        - name: Terraform Validate
+          id: validate
+          run: terraform validate
+        - name: Post TF Validate Comment
+          if: ${{ always() && (steps.validate.outcome == 'success' || steps.validate.outcome == 'failure') }}
+          uses: GetTerminus/terraform-pr-commenter@v3
+          with:
+            commenter_type: validate
+            commenter_input: ${{ format('{0}{1}', steps.validate.outputs.stdout, steps.validate.outputs.stderr) }}
+            commenter_exitcode: ${{ steps.validate.outputs.exitcode }}
+    
+  tflint-scan:
+    name: Run TFLint Scans
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: TFLint - Setup
+        uses: terraform-linters/setup-tflint@v3
+        with:
+          tflint_wrapper: true
+      - name: TFLint - Run
+        id: tflint
+        run: |
+          tflint --version
+          tflint --init
+          tflint -f compact
+      - name: Post TFLint Comment
+        if: ${{ always() && (steps.tflint.outcome == 'success' || steps.tflint.outcome == 'failure') }}
+        uses: GetTerminus/terraform-pr-commenter@dpr-update-commenter
+        with:
+          commenter_type: tflint
+          commenter_input: ${{ format('{0}{1}', steps.tflint.outputs.stdout, steps.tflint.outputs.stderr) }}
+          commenter_exitcode: ${{ steps.tflint.outputs.exitcode }}
+
+      

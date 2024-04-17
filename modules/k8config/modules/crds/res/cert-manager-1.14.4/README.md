@@ -1,0 +1,1 @@
+cert-manager CRDs can be downloaded as an all-in-one YAML from their Releases page on github: https://github.com/cert-manager/cert-manager/releases

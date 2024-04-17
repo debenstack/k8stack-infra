@@ -35,6 +35,11 @@ module "k8infra" {
     }
 }
 
+resource time_sleep "wait_60_seconds" {
+  depends_on = [ module.k8infra ]
+  create_duration = "60s"
+}
+
 module "k8config" {
     source = "./modules/k8config"
 
@@ -52,7 +57,7 @@ module "k8config" {
     }
 
     depends_on = [ 
-        module.k8infra
+        time_sleep.wait_60_seconds
      ]
 
 }

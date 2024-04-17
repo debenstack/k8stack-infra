@@ -1,5 +1,7 @@
 # All Values: https://github.com/argoproj/argo-helm/blob/main/charts/argo-cd/values.yaml
 
+addPrometheusAnnotations: true
+
 crds:
   install: true
   keep: true
@@ -19,7 +21,44 @@ notifications:
 applicationSet:
   enabled: false
 
-# Run without HTTPS so that we can handle it at ingress
-server:
+
+
+  
+
+controller:
+  metrics:
+    enabled: true
+    applicationLabels:
+      enabled: true
+    serviceMonitor:
+      enabled: true
+
+redis:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+
+server: 
   extraArgs:
+  # Run without HTTPS so that we can handle it at ingress
     - --insecure
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+
+repoServer:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+
+
+
+

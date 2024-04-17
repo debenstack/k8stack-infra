@@ -1,0 +1,9 @@
+# https://doc.traefik.io/traefik/middlewares/http/basicauth/
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: prometheus-dashboard-auth
+  namespace: traefik
+spec:
+  basicAuth:
+    secret: prometheus-dashboard-auth-secret

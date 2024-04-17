@@ -1,6 +1,10 @@
 # All Values: https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml
+
+
+installCRDs: false # this is deprecated but still necessary ! The other options won't install it
+
 crds:
-  enabled: true # whether to install the CRDs
+  enabled: false # whether to install the CRDs
   keep: true # whether to keep the CRDs after cert-manager is removed
 
 # Updating this to include cloudflare since we use that for validation
@@ -12,3 +16,9 @@ crds:
 # - 8.8.8.8:53
 # - 8.8.4.4:53
 dns01RecursiveNameservers: "1.1.1.1:53,1.0.0.1:53,8.8.8.8:53,8.8.4.4:53"
+
+
+prometheus:
+  enabled: true
+  servicemonitor:
+    enabled: true

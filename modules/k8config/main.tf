@@ -15,18 +15,34 @@ terraform {
     }
 }
 
+module "crds"{
+  source = "./modules/crds"
+
+  providers = {
+    kubectl = kubectl
+  }
+}
+
+resource time_sleep "wait_60_seconds" {
+  depends_on = [ module.crds ]
+  create_duration = "60s"
+}
+
 module "certmanager" {
   source = "./modules/certmanager"
 
   cf_email = var.cf_email
   cf_token = var.cf_token
-  cluster_name = var.cluster_name
 
   providers = {
     helm = helm
     kubernetes = kubernetes
     kubectl = kubectl
   }
+
+  depends_on = [ 
+    time_sleep.wait_60_seconds
+   ]
 }
 
 
@@ -48,9 +64,6 @@ module "traefik" {
   ]
 }
 
-
-
-
 module "argocd" {
   source = "./modules/argocd"
 
@@ -67,7 +80,20 @@ module "argocd" {
   ]
 }
 
+module "prometheus" {
+  source = "./modules/prometheus"
 
+  domain = var.domain
 
+  providers = {
+    helm = helm
+    kubernetes = kubernetes
+    kubectl = kubectl
+  }
 
-
+  depends_on = [ 
+    module.certmanager,
+    module.traefik,
+    time_sleep.wait_60_seconds
+   ]
+}
