@@ -1,36 +1,36 @@
 
 terraform {
-    required_providers {
-      kubernetes = {
-        source = "hashicorp/kubernetes"
-        version = "2.27.0"
-      }
-      helm = {
-        source  = "hashicorp/helm"
-        version = ">= 2.0.1"
-      }
-      kubectl = {
-        source = "alekc/kubectl"
-        version = "2.0.4"
-      }
+  required_providers {
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "2.27.0"
     }
+    helm = {
+      source  = "hashicorp/helm"
+      version = ">= 2.0.1"
+    }
+    kubectl = {
+      source  = "alekc/kubectl"
+      version = "2.0.4"
+    }
+  }
 }
 
 resource "helm_release" "cert_manager" {
   name = "cert-manager"
 
   repository = "https://charts.jetstack.io"
-  chart = "cert-manager"
+  chart      = "cert-manager"
 
-  atomic = true
+  atomic           = true
   create_namespace = true
-  namespace = "cert-manager"
-  version = "v1.14.4"
+  namespace        = "cert-manager"
+  version          = "v1.14.4"
 
-  recreate_pods = true
-  reuse_values = true
-  force_update = true
-  cleanup_on_fail = true
+  recreate_pods     = true
+  reuse_values      = true
+  force_update      = true
+  cleanup_on_fail   = true
   dependency_update = true
 
   values = [
@@ -41,7 +41,7 @@ resource "helm_release" "cert_manager" {
 # https://cert-manager.io/docs/configuration/acme/dns01/cloudflare/
 resource "kubernetes_secret" "cloudflare_api_credentials" {
   metadata {
-    name = "cloudflare-api-token"
+    name      = "cloudflare-api-token"
     namespace = "cert-manager"
   }
 
@@ -49,9 +49,9 @@ resource "kubernetes_secret" "cloudflare_api_credentials" {
     api-token = var.cf_token
   }
 
-  depends_on = [ 
+  depends_on = [
     helm_release.cert_manager
-   ]
+  ]
 }
 
 /**
@@ -85,7 +85,7 @@ resource "kubectl_manifest" "clusterissuer_letsencrypt_prod" {
 
   override_namespace = "cert-manager"
 
-  depends_on = [ 
+  depends_on = [
     helm_release.cert_manager,
     kubernetes_secret.cloudflare_api_credentials
   ]
@@ -98,7 +98,7 @@ resource "kubectl_manifest" "clusterissuer_letsencrypt_dev" {
 
   override_namespace = "cert-manager"
 
-  depends_on = [ 
+  depends_on = [
     helm_release.cert_manager,
     kubernetes_secret.cloudflare_api_credentials
   ]

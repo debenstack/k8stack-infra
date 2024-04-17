@@ -12,15 +12,16 @@ terraform {
   }
 }
 
-resource "helm_release" "kyverno" {
-  name = "kyverno"
+resource "helm_release" "elasticsearch" {
+  name = "elasticsearch"
 
-  repository = "https://kyverno.github.io/kyverno/"
-  chart      = "kyverno"
+  repository = "https://helm.elastic.co"
+  chart      = "eck-operator"
 
   atomic           = true
   create_namespace = true
-  namespace        = "kyverno"
+  namespace        = "elasticsearch"
+  version          = "2.12.1"
 
   recreate_pods     = true
   reuse_values      = true
@@ -29,6 +30,6 @@ resource "helm_release" "kyverno" {
   dependency_update = true
 
   values = [
-    file("${abspath(path.module)}/res/kyverno-values.yaml")
+    file("${abspath(path.module)}/res/elasticsearch-values.yaml")
   ]
 }

@@ -1,21 +1,25 @@
 terraform {
-    required_providers {
-      kubernetes = {
-        source = "hashicorp/kubernetes"
-        version = "2.27.0"
-      }
-      helm = {
-        source  = "hashicorp/helm"
-        version = ">= 2.0.1"
-      }
-      kubectl = {
-        source = "alekc/kubectl"
-        version = "2.0.4"
-      }
+  required_providers {
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "2.27.0"
     }
+    helm = {
+      source  = "hashicorp/helm"
+      version = ">= 2.0.1"
+    }
+    kubectl = {
+      source  = "alekc/kubectl"
+      version = "2.0.4"
+    }
+    time = {
+      source  = "hashicorp/time"
+      version = "0.11.1"
+    }
+  }
 }
 
-module "crds"{
+module "crds" {
   source = "./modules/crds"
 
   providers = {
@@ -23,8 +27,8 @@ module "crds"{
   }
 }
 
-resource time_sleep "wait_60_seconds" {
-  depends_on = [ module.crds ]
+resource "time_sleep" "wait_60_seconds" {
+  depends_on      = [module.crds]
   create_duration = "60s"
 }
 
@@ -35,14 +39,14 @@ module "certmanager" {
   cf_token = var.cf_token
 
   providers = {
-    helm = helm
+    helm       = helm
     kubernetes = kubernetes
-    kubectl = kubectl
+    kubectl    = kubectl
   }
 
-  depends_on = [ 
+  depends_on = [
     time_sleep.wait_60_seconds
-   ]
+  ]
 }
 
 
@@ -51,15 +55,15 @@ module "traefik" {
 
   cf_email = var.cf_email
   cf_token = var.cf_token
-  domain = var.domain
+  domain   = var.domain
 
   providers = {
-    helm = helm
+    helm       = helm
     kubernetes = kubernetes
-    kubectl = kubectl
+    kubectl    = kubectl
   }
 
-  depends_on = [ 
+  depends_on = [
     module.certmanager
   ]
 }
@@ -70,7 +74,7 @@ module "argocd" {
   domain = var.domain
 
   providers = {
-    helm = helm,
+    helm    = helm,
     kubectl = kubectl
   }
 
@@ -86,16 +90,16 @@ module "prometheus" {
   domain = var.domain
 
   providers = {
-    helm = helm
+    helm       = helm
     kubernetes = kubernetes
-    kubectl = kubectl
+    kubectl    = kubectl
   }
 
-  depends_on = [ 
+  depends_on = [
     module.certmanager,
     module.traefik,
     time_sleep.wait_60_seconds
-   ]
+  ]
 }
 
 module "kyverno" {
@@ -103,11 +107,24 @@ module "kyverno" {
 
   providers = {
     kubectl = kubectl
-    helm = helm
+    helm    = helm
   }
 
-  depends_on = [ 
+  depends_on = [
     module.prometheus,
+    time_sleep.wait_60_seconds
+  ]
+}
+
+module "elasticsearch" {
+  source = "./modules/elasticsearch"
+
+  providers = {
+    kubectl = kubectl
+    helm    = helm
+  }
+
+  depends_on = [
     time_sleep.wait_60_seconds
   ]
 }
