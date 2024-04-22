@@ -209,7 +209,10 @@ CRDs are meant to be the powerhouse of Kubernetes. To make something Cloud/Kuber
 Helm ignores this feature, and instead focuses on trying to template out all components. It leave this to working with the Kubernetes primitive, Pod/Service/Secrets services. Which are the basics, but aren't the full capabilities of the framework. They are really just the surface, and Helm encourage people away from those advanced and powerful capabilities with its workflows.
 
 ## Prometheus-Adapter has a bug in it, out the gate:
-https://github.com/kubernetes-sigs/prometheus-adapter/issues/385
+* https://github.com/kubernetes-sigs/prometheus-adapter/issues/385
+* https://github.com/kubernetes-sigs/prometheus-adapter/issues/398
+
+Actually it was this comment all the way down that gave me hope into what the issue could be: https://github.com/kubernetes-sigs/prometheus-adapter/issues/398#issuecomment-1443580236
 
 Basically, depending on how you installed prometheus. You may not be providing a `node` value to the `node_cpu_seconds_total` - a critical metric with the default configuration of prometheus-adapter.
 
