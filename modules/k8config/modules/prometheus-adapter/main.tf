@@ -12,7 +12,7 @@ resource "helm_release" "prometheus-adapter" {
 
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-adapter"
-  version = "4.10.0"
+  version    = "4.10.0"
 
   atomic = true
 

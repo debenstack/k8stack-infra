@@ -120,16 +120,16 @@ module "kyverno" {
 module "loki" {
   source = "./modules/loki"
 
-  s3_access_key_id = var.s3_access_key_id
+  s3_access_key_id     = var.s3_access_key_id
   s3_secret_access_key = var.s3_secret_access_key
 
   providers = {
     helm = helm
   }
 
-  depends_on = [ 
+  depends_on = [
     time_sleep.wait_60_seconds
-   ]
+  ]
 }
 
 module "promtail" {
@@ -139,10 +139,10 @@ module "promtail" {
     helm = helm
   }
 
-  depends_on = [ 
+  depends_on = [
     time_sleep.wait_60_seconds,
     module.loki
-   ]
+  ]
 }
 
 
@@ -153,7 +153,7 @@ module "prometheus-adapter" {
     helm = helm
   }
 
-  depends_on = [ 
+  depends_on = [
     time_sleep.wait_60_seconds,
     module.prometheus
   ]
