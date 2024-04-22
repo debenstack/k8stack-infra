@@ -209,7 +209,34 @@ CRDs are meant to be the powerhouse of Kubernetes. To make something Cloud/Kuber
 Helm ignores this feature, and instead focuses on trying to template out all components. It leave this to working with the Kubernetes primitive, Pod/Service/Secrets services. Which are the basics, but aren't the full capabilities of the framework. They are really just the surface, and Helm encourage people away from those advanced and powerful capabilities with its workflows.
 
 ## Prometheus-Adapter has a bug in it, out the gate:
-https://github.com/kubernetes-sigs/prometheus-adapter/issues/385
+* https://github.com/kubernetes-sigs/prometheus-adapter/issues/385
+* https://github.com/kubernetes-sigs/prometheus-adapter/issues/398
+
+Actually it was this comment all the way down that gave me hope into what the issue could be: https://github.com/kubernetes-sigs/prometheus-adapter/issues/398#issuecomment-1443580236
+
+Basically, depending on how you installed prometheus. You may not be providing a `node` value to the `node_cpu_seconds_total` - a critical metric with the default configuration of prometheus-adapter.
+
+There are multiple ways you can fix this issue, depending whether you would like to relabel the metric in prometheus, or search for wherever the correct one is from the prometheus-adapter. I chose to fix it within prometheus, as its more helpful to have anyway, and with the prometheus UI, you can debug and prove whether you fixed it or not
+
+Basically, within prometheus you need to add the following relabeling rule:
+```yaml
+prometheus-node-exporter:
+  monitor:
+    relabelings:
+      - sourceLabels: [__meta_kubernetes_pod_node_name]
+        separator: ;
+        regex: ^(.*)$
+        targetLabel: node
+        replacement: $1
+        action: replace
+```
+
+Once you've applied the change, test that the label exists within the UI and putting into the search `node_cpu_seconds_total`. You should see your new label in there
+
+Now, with the default setup of prometheus-adapter, you should successfully be able to get your top usage nodes from kubectl:
+```bash
+kubectl top nodes
+```
 
 ## S3 external storage documentation and secure configuration of keys is basically all out of date, scattered around, or broken! 
 The grafana docs are complete shit. I've read it from multiple forums already, but this is my first experience where its truly shown its colors. In order to get proper cloud storage setup, i've had to jump between a bunch of forums, blind guess through a whole bunch of possibilities, and then stumble on a makeshift of a couple options in order to get everything working
@@ -306,6 +333,8 @@ To get more verbose output, also pass these arguments in the `extraArgs` section
     - --print-config-stderr
 ```
 Again, `--log.level=debug` and `--print-config-stderr` are pretty useless until you get your `aws.s3` configuration correct. You'll be stuck with generic errors until you get that sorted
+
+**Note:** There is no typo on `-config.expand-env=true`, it only prefixes with 1 dash. Don't ask me why
 
 
 ## Bonus Garbage

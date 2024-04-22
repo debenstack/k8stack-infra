@@ -171,8 +171,6 @@ rules:
             resource: namespace
           pod:
             resource: pod
-          instance:
-            resource: node
       containerLabel: container
     memory:
       containerQuery: |
@@ -187,8 +185,6 @@ rules:
         )
       resources:
         overrides:
-          instance:
-            resource: node
           node:
             resource: node
           namespace:
