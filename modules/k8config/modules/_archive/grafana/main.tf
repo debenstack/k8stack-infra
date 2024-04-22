@@ -19,7 +19,7 @@ resource "helm_release" "grafana" {
   name = "grafana"
 
   repository = "https://grafana.github.io/helm-charts"
-  chart      = "grafana"
+  chart      = "grafana-agent-operator"
 
   atomic = true
 
@@ -34,7 +34,7 @@ resource "helm_release" "grafana" {
   dependency_update = true
 
   values = [
-    file("${abspath(path.module)}/res/grafana-values.yaml")
+    file("${abspath(path.module)}/res/grafana-agent-operator-values.yaml")
   ]
 
   depends_on = [

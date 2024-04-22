@@ -1,5 +1,5 @@
 terraform {
-  required_version = "~> 1.7.5"
+  required_version = "~> 1.8.1"
 
   required_providers {
     digitalocean = {
@@ -34,8 +34,7 @@ terraform {
 
 
 module "k8infra" {
-  source   = "./modules/k8infra"
-  do_token = var.do_token
+  source = "./modules/k8infra"
 
   providers = {
     digitalocean = digitalocean
@@ -57,6 +56,10 @@ module "k8config" {
   cf_email     = var.cf_email
   cf_token     = var.cf_token
   domain       = var.domain
+
+
+  s3_access_key_id     = var.do_spaces_access_key_id
+  s3_secret_access_key = var.do_spaces_secret_access_key
 
   providers = {
     kubernetes = kubernetes

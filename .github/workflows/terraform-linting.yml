@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 env:
-  TF_VERSION: "1.7.5"
+  TF_VERSION: "1.8.1"
   GITHUB_TOKEN: ${{ github.token }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel

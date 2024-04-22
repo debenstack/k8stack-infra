@@ -7,16 +7,16 @@ terraform {
   }
 }
 
-resource "helm_release" "loki" {
-  name = "loki"
+resource "helm_release" "promtail" {
+  name = "promtail"
 
   repository = "https://grafana.github.io/helm-charts"
-  chart      = "loki"
+  chart      = "promtail"
 
   atomic = true
 
   create_namespace = true
-  namespace        = "loki"
+  namespace        = "promtail"
 
   recreate_pods     = true
   reuse_values      = true
@@ -25,7 +25,7 @@ resource "helm_release" "loki" {
   dependency_update = true
 
   values = [
-    file("${abspath(path.module)}/res/loki-values.yaml")
+    file("${abspath(path.module)}/res/promtail-values.yaml")
   ]
 
 }
