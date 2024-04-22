@@ -48,12 +48,12 @@ daemonset:
 deployment:
   # -- Deploys Promtail as a Deployment
   enabled: true
-  replicaCount: 3
+  replicaCount: 1
   autoscaling:
     # -- Creates a HorizontalPodAutoscaler for the deployment
     enabled: true
-    minReplicas: 3
-    maxReplicas: 10
+    minReplicas: 1
+    maxReplicas: 3
     targetCPUUtilizationPercentage: 80
     targetMemoryUtilizationPercentage:
     # behavior: {}
