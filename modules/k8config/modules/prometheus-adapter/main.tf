@@ -7,16 +7,17 @@ terraform {
   }
 }
 
-resource "helm_release" "loki" {
-  name = "loki"
+resource "helm_release" "prometheus-adapter" {
+  name = "prometheus-adapter"
 
-  repository = "https://grafana.github.io/helm-charts"
-  chart      = "loki"
+  repository = "https://prometheus-community.github.io/helm-charts"
+  chart      = "prometheus-adapter"
+  version = "4.10.0"
 
   atomic = true
 
   create_namespace = true
-  namespace        = "loki"
+  namespace        = "prometheus-adapter"
 
   recreate_pods     = true
   reuse_values      = true
@@ -25,7 +26,7 @@ resource "helm_release" "loki" {
   dependency_update = true
 
   values = [
-    file("${abspath(path.module)}/res/loki-values.yaml")
+    file("${abspath(path.module)}/res/prometheus-adapter-values.yaml")
   ]
 
 }

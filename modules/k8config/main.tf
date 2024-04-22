@@ -116,15 +116,45 @@ module "kyverno" {
   ]
 }
 
-module "elasticsearch" {
-  source = "./modules/elasticsearch"
+
+module "loki" {
+  source = "./modules/loki"
+
+  s3_access_key_id = var.s3_access_key_id
+  s3_secret_access_key = var.s3_secret_access_key
 
   providers = {
-    kubectl = kubectl
-    helm    = helm
+    helm = helm
   }
 
-  depends_on = [
+  depends_on = [ 
     time_sleep.wait_60_seconds
+   ]
+}
+
+module "promtail" {
+  source = "./modules/promtail"
+
+  providers = {
+    helm = helm
+  }
+
+  depends_on = [ 
+    time_sleep.wait_60_seconds,
+    module.loki
+   ]
+}
+
+
+module "prometheus-adapter" {
+  source = "./modules/prometheus-adapter"
+
+  providers = {
+    helm = helm
+  }
+
+  depends_on = [ 
+    time_sleep.wait_60_seconds,
+    module.prometheus
   ]
 }

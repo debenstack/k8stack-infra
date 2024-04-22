@@ -33,3 +33,18 @@ resource "helm_release" "elasticsearch" {
     file("${abspath(path.module)}/res/elasticsearch-values.yaml")
   ]
 }
+
+resource "time_sleep" "wait_60_seconds" {
+  depends_on      = [helm_release.elasticsearch]
+  create_duration = "60s"
+}
+
+/*
+resource "kubectl_manifest" "elasticsearch_cluster" {
+  yaml_body = file("${abspath(path.module)}/res/elasticsearch.yaml")
+
+  depends_on = [
+    time_sleep.wait_60_seconds
+  ]
+}
+*/

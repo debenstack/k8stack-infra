@@ -35,7 +35,9 @@ resource "kubectl_manifest" "kyverno-crds" {
   server_side_apply = true
 }
 
+
 /* Elasticsearch */
+/*
 resource "helm_release" "elasticsearch-crds" {
   name = "eck-operator"
 
@@ -56,4 +58,4 @@ resource "helm_release" "elasticsearch-crds" {
   #values = [
   #  file("${abspath(path.module)}/res/elasticsearch-crd-values.yaml")
   #]
-}
+}*/

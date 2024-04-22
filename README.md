@@ -32,9 +32,10 @@ Below is a table of each piece installed in my cluster at the moment, and what r
 | Traefik | Ingress Controller | |
 | Kyverno | RBAC and Admissions Controller | |
 | Prometheus | Observability - Metrics Server | |
-| Grafana | Observability - Metrics Dashbaord | |
-| Elasticsearch | Observability - Logging Database | |
-| Kibana | Observability - Logging Dashboard | Coming Soon |
+| Prometheus Adapter | Metrics for Kubernetes Metrics API | Replaces metrics-server to work with Prometheus instead |
+| Grafana | Observability - Metrics & Logging Dashbaord | |
+| Loki| Observability - Logging Database | |
+| Promtail | Observability - Container Stdout Log Scraping | Forwards to Loki |
 | Vault | Secrets Manager | Coming Soon |
 
 Below now is another table of the tech being used for managing and configuring my Kubernetes cluster:

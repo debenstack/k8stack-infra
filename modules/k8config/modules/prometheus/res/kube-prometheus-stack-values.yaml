@@ -1107,7 +1107,12 @@ grafana:
 
   ## Configure additional grafana datasources (passed through tpl)
   ## ref: http://docs.grafana.org/administration/provisioning/#datasources
-  additionalDataSources: []
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      editable: false
+      url: http://loki-loki-distributed-gateway.loki.svc.cluster.local
+
   # - name: prometheus-sample
   #   access: proxy
   #   basicAuth: true
