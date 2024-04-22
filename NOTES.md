@@ -307,6 +307,8 @@ To get more verbose output, also pass these arguments in the `extraArgs` section
 ```
 Again, `--log.level=debug` and `--print-config-stderr` are pretty useless until you get your `aws.s3` configuration correct. You'll be stuck with generic errors until you get that sorted
 
+**Note:** There is no typo on `-config.expand-env=true`, it only prefixes with 1 dash. Don't ask me why
+
 
 ## Bonus Garbage
 Oh, also. A whole bunch of these docs talk about using boltdb_shipper. That thing is deprecated! (https://grafana.com/docs/loki/latest/configure/storage/#boltdb-deprecated) There is a new one (https://grafana.com/docs/loki/latest/configure/storage/#tsdb-recommended), but man...documentation ? Where is it ? Nobody appears to be using this yet either
