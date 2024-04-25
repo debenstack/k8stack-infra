@@ -29,10 +29,10 @@ resource "digitalocean_kubernetes_cluster" "k8stack" {
 
   node_pool {
     name       = "main-worker-pool"
-    size       = "s-2vcpu-2gb"
+    size       = "s-1vcpu-2gb"
     auto_scale = true
-    min_nodes  = 3
-    max_nodes  = 5
+    min_nodes  = 4
+    max_nodes  = 8
   }
 }
 
@@ -44,6 +44,11 @@ resource "digitalocean_project" "k8stack-project" {
   resources = [
     digitalocean_kubernetes_cluster.k8stack.urn
   ]
+}
+
+resource "digitalocean_spaces_bucket" "k8stack-resources" {
+  name   = "k8stack-resources"
+  region = "nyc3"
 }
 
 

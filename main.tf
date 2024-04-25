@@ -40,6 +40,9 @@ module "k8infra" {
     digitalocean = digitalocean
     cloudflare   = cloudflare
   }
+
+  domain     = var.domain
+  sub_domain = var.sub_domain
 }
 
 resource "time_sleep" "wait_60_seconds" {
@@ -52,11 +55,10 @@ module "k8config" {
 
   cluster_id   = module.k8infra.cluster_id
   cluster_name = module.k8infra.cluster_name
-  do_token     = var.do_token
-  cf_email     = var.cf_email
-  cf_token     = var.cf_token
-  domain       = var.domain
 
+  cf_email = var.cf_email
+  cf_token = var.cf_token
+  domain   = var.sub_domain != "" ? format("%s.%s", var.sub_domain, var.domain) : var.domain
 
   s3_access_key_id     = var.do_spaces_access_key_id
   s3_secret_access_key = var.do_spaces_secret_access_key

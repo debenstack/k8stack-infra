@@ -24,6 +24,39 @@ providers:
     # https://medium.com/@reefland/traefik-share-resources-across-namespaces-ffe295789db2
     allowCrossNamespace: true
 
+
+deployment:
+  enabled: true
+  kind: Deployment
+
+  # Sidecar configurations
+  additionalContainers:
+    - name: promtail
+      image: grafana/promtail
+      args: 
+        - "-config.file=/etc/promtail/promtail.yaml" # Found in the ConfigMap
+      volumeMounts:
+        - name: promtail-config-volume
+          mountPath: /etc/promtail
+        - name: logging # shared space
+          mountPath: /app/logs
+
+  additionalVolumes:
+    - name: promtail-config-volume
+      configMap:
+        name: promtail-sidecar-config-map
+    - name: logging
+      emptyDir:
+        sizeLimit: 500Mi
+
+
+
+
+# Volumes and mounts onto the Traefik server
+additionalVolumeMounts:
+    - name: logging
+      mountPath: /var/log/traefik
+
 service:
   enabled: true
   type: LoadBalancer
@@ -66,6 +99,31 @@ ingressRoute:
     tls:
       secretName: traefik-dashboard-certificate-secret
 
+# https://grafana.com/grafana/dashboards/17501-traefik-via-loki/
+logs:
+  general:
+    level: INFO
+    format: json
+  access:
+    enabled: true
+    addInternals: true
+    format: json
+    filePath: /var/log/traefik/access.log
+
+metrics:
+  addInternals: true
+  prometheus:
+    service:
+      enabled: true
+    serviceMonitor:
+      jobLabel: traefik
+      interval: 30s
+      honorLabels: true
+    entryPoint: metrics
+    addEntryPointsLabels: true
+    addRoutersLabels: true
+    addServicesLabels: true
+    buckets: "0.5,1.0,2.5"
 
 
 # lets not define the secret here as we want terraform to generate the random password on setup to use
@@ -92,6 +150,28 @@ extraObjects:
       issuerRef:
         name: letsencrypt-dev-cluster-issuer
         kind: ClusterIssuer
+  # Generate the ConfigMap for promtail sidecar
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: promtail-sidecar-config-map
+      namespace: traefik
+    data:
+      promtail.yaml: |
+          server:
+            disable: true
+          positions:
+            filename: /tmp/positions.yaml
+          clients: # Specify target
+            - url: http://loki-loki-distributed-gateway.loki.svc.cluster.local/loki/api/v1/push
+          scrape_configs:
+            - job_name:  "traefik" 
+              static_configs: 
+                - targets: 
+                    - localhost 
+                  labels:
+                    app: "traefik"
+                    __path__: /app/logs/*.log # Any file .log in the EmptyDir Volume.
   
 
 persistence:

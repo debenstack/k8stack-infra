@@ -36,4 +36,11 @@ variable "domain" {
   type        = string
 }
 
+variable "sub_domain" {
+  description = "Sub Domain That Is Prepended"
+  sensitive   = true
+  type        = string
+  default     = ""
+}
+
 
