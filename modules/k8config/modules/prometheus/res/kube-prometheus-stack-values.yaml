@@ -3449,7 +3449,8 @@ prometheus:
     query: {}
 
     ## If nil, select own namespace. Namespaces to be selected for PrometheusRules discovery.
-    ruleNamespaceSelector: {}
+    ruleNamespaceSelector:
+      any: true
     ## Example which selects PrometheusRules in namespaces with label "prometheus" set to "somelabel"
     # ruleNamespaceSelector:
     #   matchLabels:
@@ -3459,7 +3460,7 @@ prometheus:
     ## prometheus resource to be created with selectors based on values in the helm deployment,
     ## which will also match the PrometheusRule resources created
     ##
-    ruleSelectorNilUsesHelmValues: true
+    ruleSelectorNilUsesHelmValues: false
 
     ## PrometheusRules to be selected for target discovery.
     ## If {}, select all PrometheusRules
@@ -3484,7 +3485,7 @@ prometheus:
     ## prometheus resource to be created with selectors based on values in the helm deployment,
     ## which will also match the servicemonitors created
     ##
-    serviceMonitorSelectorNilUsesHelmValues: true
+    serviceMonitorSelectorNilUsesHelmValues: false
 
     ## ServiceMonitors to be selected for target discovery.
     ## If {}, select all ServiceMonitors
@@ -3497,7 +3498,8 @@ prometheus:
 
     ## Namespaces to be selected for ServiceMonitor discovery.
     ##
-    serviceMonitorNamespaceSelector: {}
+    serviceMonitorNamespaceSelector:
+      any: true
     ## Example which selects ServiceMonitors in namespaces with label "prometheus" set to "somelabel"
     # serviceMonitorNamespaceSelector:
     #   matchLabels:
@@ -3507,7 +3509,7 @@ prometheus:
     ## prometheus resource to be created with selectors based on values in the helm deployment,
     ## which will also match the podmonitors created
     ##
-    podMonitorSelectorNilUsesHelmValues: true
+    podMonitorSelectorNilUsesHelmValues: false
 
     ## PodMonitors to be selected for target discovery.
     ## If {}, select all PodMonitors
@@ -3519,7 +3521,8 @@ prometheus:
     #     prometheus: somelabel
 
     ## If nil, select own namespace. Namespaces to be selected for PodMonitor discovery.
-    podMonitorNamespaceSelector: {}
+    podMonitorNamespaceSelector:
+      any: true
     ## Example which selects PodMonitor in namespaces with label "prometheus" set to "somelabel"
     # podMonitorNamespaceSelector:
     #   matchLabels:

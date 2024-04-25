@@ -339,3 +339,36 @@ Again, `--log.level=debug` and `--print-config-stderr` are pretty useless until 
 
 ## Bonus Garbage
 Oh, also. A whole bunch of these docs talk about using boltdb_shipper. That thing is deprecated! (https://grafana.com/docs/loki/latest/configure/storage/#boltdb-deprecated) There is a new one (https://grafana.com/docs/loki/latest/configure/storage/#tsdb-recommended), but man...documentation ? Where is it ? Nobody appears to be using this yet either
+
+# Traefik Has Service Monitor and Prometheus Integration. Its just not documented.
+
+Between a whole bunch of forums, some guessing and I think typos in the values.yaml file in the Helm chart. I was able to enable the Prometheus service monitoring and ServiceMonitor so that Prometheus would finally start picking up metrics from Traefik
+
+Source:
+* https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml
+* https://www.reddit.com/r/PrometheusMonitoring/comments/122q8lf/collecting_traefik_metrics/
+* https://github.com/prometheus-community/helm-charts/issues/106
+* https://community.traefik.io/t/can-you-help-me-getting-traefik-metrics-version-2-2-8/10297/2
+
+Basically the configuration has to be as follows in your helm `values.yaml` to enable to creation of the monitoring service and the ServiceMonitor type so that prometheus can find it:
+
+```yaml
+metrics:
+  prometheus:
+    # This part has to exist and be set to true to create the ClusterIP endpoint that Prometheus will hit
+    service:
+      enabled: true
+    serviceMonitor:
+      # Have to define these 3. There are additional optional ones, but without these, the ServiceMonitor is not created
+      jobLabel: traefik
+      interval: 30s
+      honorLabels: true
+    # This tells the pods to have scrapable metrics available
+    entryPoint: metrics
+    addEntryPointsLabels: true
+    addRoutersLabels: true
+    addServicesLabels: true
+    buckets: "0.5,1.0,2.5"
+```
+
+All of the above is the minimum required in order for scraping to work

@@ -15,6 +15,12 @@ terraform {
   }
 }
 
+resource "kubernetes_namespace" "traefik_namespace" {
+  metadata {
+    name = "traefik"
+  }
+}
+
 resource "helm_release" "traefik_ingress" {
   name = "traefik-ingress-controller"
 
@@ -38,7 +44,8 @@ resource "helm_release" "traefik_ingress" {
   ]
 
   depends_on = [
-    #kubernetes_secret.cloudflare_api_credentials
+    kubernetes_namespace.traefik_namespace,
+    kubernetes_secret.traefik_dashboard_password
   ]
 }
 
@@ -63,6 +70,7 @@ resource "kubernetes_secret" "traefik_dashboard_password" {
   }
 
   depends_on = [
-    helm_release.traefik_ingress
+    kubernetes_namespace.traefik_namespace
   ]
+
 }

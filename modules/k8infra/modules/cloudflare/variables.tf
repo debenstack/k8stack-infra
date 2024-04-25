@@ -9,3 +9,9 @@ variable "sub_domain" {
   sensitive   = true
   type        = string
 }
+
+variable "load_balancer_ip" {
+  description = "IP of the LoadBalancer"
+  sensitive   = false
+  type        = string
+}

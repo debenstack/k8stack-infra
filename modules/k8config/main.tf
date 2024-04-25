@@ -64,7 +64,8 @@ module "traefik" {
   }
 
   depends_on = [
-    module.certmanager
+    module.certmanager,
+    time_sleep.wait_60_seconds
   ]
 }
 
@@ -80,7 +81,8 @@ module "argocd" {
 
   depends_on = [
     module.certmanager,
-    module.traefik
+    module.traefik,
+    time_sleep.wait_60_seconds
   ]
 }
 
