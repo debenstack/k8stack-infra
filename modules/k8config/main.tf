@@ -58,9 +58,7 @@ module "traefik" {
   domain   = var.domain
 
   providers = {
-    helm       = helm
-    kubernetes = kubernetes
-    kubectl    = kubectl
+    helm = helm
   }
 
   depends_on = [
@@ -162,3 +160,20 @@ module "prometheus-adapter" {
   ]
 }
 
+module "postgres-operator" {
+  source = "./modules/postgres"
+
+  domain = var.domain
+
+  providers = {
+    helm       = helm
+    kubectl    = kubectl
+    kubernetes = kubernetes
+  }
+
+  depends_on = [
+    time_sleep.wait_60_seconds,
+    module.certmanager,
+    module.traefik
+  ]
+}

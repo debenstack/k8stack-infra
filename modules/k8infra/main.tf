@@ -44,9 +44,9 @@ resource "digitalocean_kubernetes_cluster" "k8stack" {
 
     auto_scale = true
 
-    min_nodes  = 2
-    node_count = 4
-    max_nodes  = 8
+    min_nodes = 2
+    # node_count = 4
+    max_nodes = 8
 
     tags = ["pool-name:main-worker-pool", "resource-demand:high"]
 
@@ -65,9 +65,9 @@ resource "digitalocean_kubernetes_node_pool" "extended_pool" {
 
   auto_scale = true
 
-  min_nodes  = 1
-  node_count = 5
-  max_nodes  = 8
+  min_nodes = 1
+  # node_count = 5
+  max_nodes = 8
 
   tags = ["pool-name:extended-pool", "resource-demand:low"]
 
