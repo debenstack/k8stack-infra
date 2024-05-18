@@ -34,13 +34,13 @@ resource "digitalocean_kubernetes_cluster" "k8stack" {
   tags = ["k8stack"]
 
   maintenance_policy {
-    start_time = "7:00" 
-    day = "any"
+    start_time = "7:00"
+    day        = "any"
   }
-  
+
   node_pool {
-    name       = "main-worker-pool"
-    size       = "s-2vcpu-2gb"
+    name = "main-worker-pool"
+    size = "s-2vcpu-2gb"
 
     auto_scale = true
 
@@ -60,14 +60,14 @@ resource "digitalocean_kubernetes_cluster" "k8stack" {
 resource "digitalocean_kubernetes_node_pool" "extended_pool" {
   cluster_id = digitalocean_kubernetes_cluster.k8stack.id
 
-  name       = "extended-worker-pool"
-  size       = "s-1vcpu-2gb"
-  
+  name = "extended-worker-pool"
+  size = "s-1vcpu-2gb"
+
   auto_scale = true
-  
-  min_nodes = 1
+
+  min_nodes  = 1
   node_count = 5
-  max_nodes = 8
+  max_nodes  = 8
 
   tags = ["pool-name:extended-pool", "resource-demand:low"]
 
@@ -92,7 +92,7 @@ resource "digitalocean_project" "k8stack-project" {
 resource "digitalocean_spaces_bucket" "k8stack-resources" {
   name   = "k8stack-resources"
   region = "nyc3"
-  acl = "private"
+  acl    = "private"
 
   # Deletes the bucket even if its not empty
   force_destroy = true
