@@ -1,0 +1,206 @@
+# All Values: https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml
+# Example configurations: https://github.com/traefik/traefik-helm-chart/blob/master/EXAMPLES.md
+additionalArguments:
+  - --api.dashboard=true
+  - --api=true
+  # Tell Traefik to only trust incoming headers from the Digital Ocean Load Balancers.
+  - "--entryPoints.web.proxyProtocol.trustedIPs=127.0.0.1/32,10.132.0.0/16"
+  - "--entryPoints.websecure.proxyProtocol.trustedIPs=127.0.0.1/32,10.132.0.0/16"
+  # Also whitelist the source of headers to trust,  the private IPs on the load balancers displayed on the networking page of DO.
+  - "--entryPoints.web.forwardedHeaders.trustedIPs=127.0.0.1/32,10.132.0.0/16"
+  - "--entryPoints.websecure.forwardedHeaders.trustedIPs=127.0.0.1/32,10.132.0.0/16"
+#  - --entrypoints.websecure.http.tls.certresolver=cloudflare
+#  - --entrypoints.websecure.http.tls.domains[0].main=k8.projectterris.com
+#  - --entrypoints.websecure.http.tls.domains[0].sans=*.k8.projectterris.com
+#  - --certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare
+#  - --certificatesresolvers.cloudflare.acme.email=ben@soernet.ca
+#  - --certificatesresolvers.cloudflare.acme.dnschallenge.resolvers=1.1.1.1
+#  - --certificatesresolvers.cloudflare.acme.storage=/certs/acme.json
+# ^ All of these can be defined as values in this file! 
+
+providers:
+  kubernetesCRD:
+    # Allow traefik to access resources and items that are created in different namespaces
+    # https://medium.com/@reefland/traefik-share-resources-across-namespaces-ffe295789db2
+    allowCrossNamespace: true
+
+
+deployment:
+  enabled: true
+  kind: Deployment
+
+  # Sidecar configurations
+  additionalContainers:
+    - name: promtail
+      image: grafana/promtail
+      args: 
+        - "-config.file=/etc/promtail/promtail.yaml" # Found in the ConfigMap
+      volumeMounts:
+        - name: promtail-config-volume
+          mountPath: /etc/promtail
+        - name: logging # shared space
+          mountPath: /app/logs
+
+  additionalVolumes:
+    - name: promtail-config-volume
+      configMap:
+        name: promtail-sidecar-config-map
+    - name: logging
+      emptyDir:
+        sizeLimit: 500Mi
+
+
+
+
+# Volumes and mounts onto the Traefik server
+additionalVolumeMounts:
+    - name: logging
+      mountPath: /var/log/traefik
+
+service:
+  enabled: true
+  type: LoadBalancer
+  annotations:
+    # This will tell DigitalOcean to enable the proxy protocol.
+    service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
+  spec:
+    # This is the default and should stay as cluster to keep the DO health checks working.
+    externalTrafficPolicy: Cluster
+
+resources:
+  requests:
+   cpu: 100m
+   memory: 50Mi
+  limits:
+    cpu: 300m
+    memory: 150Mi
+
+ports:
+  web:
+    redirectTo:
+      port: websecure
+      scheme: https
+      permanent: true
+
+#env:
+#  - name: CF_API_EMAIL
+#    valueFrom:
+#      secretKeyRef:
+#        key: email
+#        name: cloudflare-api-credentials
+#  - name: CF_API_KEY
+#    valueFrom:
+#      secretKeyRef:
+#        key: apiKey
+#        name: cloudflare-api-credentials
+
+ingressRoute:
+  dashboard:
+    enabled: true
+    entryPoints:
+      - websecure
+    matchRule: Host(`traefik.${domain}`)
+    middlewares:
+      - name: traefik-dashboard-auth
+    # https://github.com/traefik/traefik-helm-chart/blob/master/traefik/templates/dashboard-ingressroute.yaml
+    # https://doc.traefik.io/traefik/v2.3/routing/providers/kubernetes-crd/#kind-ingressroute
+    tls:
+      secretName: traefik-dashboard-certificate-secret
+
+# https://grafana.com/grafana/dashboards/17501-traefik-via-loki/
+logs:
+  general:
+    level: INFO
+    format: json
+  access:
+    enabled: true
+    addInternals: true
+    format: json
+    filePath: /var/log/traefik/access.log
+
+metrics:
+  addInternals: true
+  prometheus:
+    service:
+      enabled: true
+    serviceMonitor:
+      jobLabel: traefik
+      interval: 30s
+      honorLabels: true
+    entryPoint: metrics
+    addEntryPointsLabels: true
+    addRoutersLabels: true
+    addServicesLabels: true
+    buckets: "0.5,1.0,2.5"
+
+
+# lets not define the secret here as we want terraform to generate the random password on setup to use
+extraObjects:
+  # Generate the Middleware for authentication for the Traefik Dashboard
+  - apiVersion: traefik.io/v1alpha1
+    kind: Middleware
+    metadata:
+      name: traefik-dashboard-auth
+    spec:
+      basicAuth:
+        secret: traefik-dashboard-auth-password
+  # Generate the Certificate from certmanager for the Traefik Dashboard
+  # https://github.com/cert-manager/cert-manager/issues/3021
+  - apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: traefik-dashboard-certificate
+      namespace: traefik
+    spec:
+      secretName: traefik-dashboard-certificate-secret
+      dnsNames:
+        - "traefik.${domain}"
+      issuerRef:
+        name: letsencrypt-dev-cluster-issuer
+        kind: ClusterIssuer
+  # Generate the ConfigMap for promtail sidecar
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: promtail-sidecar-config-map
+      namespace: traefik
+    data:
+      promtail.yaml: |
+          server:
+            disable: true
+          positions:
+            filename: /tmp/positions.yaml
+          clients: # Specify target
+            - url: http://loki-loki-distributed-gateway.loki.svc.cluster.local/loki/api/v1/push
+          scrape_configs:
+            - job_name:  "traefik" 
+              static_configs: 
+                - targets: 
+                    - localhost 
+                  labels:
+                    app: "traefik"
+                    __path__: /app/logs/*.log # Any file .log in the EmptyDir Volume.
+  
+
+persistence:
+  enabled: false
+  path: /certs
+  size: 128Mi
+
+affinity:
+#  nodeAffinity:
+#    preferredDuringSchedulingIgnoredDuringExecution:
+#      - weight: 1
+#        preference:
+#          matchExpressions:
+#          - key: resource-demand
+#            operator: In
+#            values:
+#            - low
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: '{{ template "traefik.name" . }}'
+            app.kubernetes.io/instance: '{{ .Release.Name }}-{{ .Release.Namespace }}'
+        topologyKey: kubernetes.io/hostname

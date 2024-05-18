@@ -21,7 +21,7 @@ resource "cloudflare_record" "prometheus-a" {
   zone_id = lookup(data.cloudflare_zones.domain_lookup.zones[0], "id")
   name    = local.prometheus_domain
   type    = "A"
-  value   = digitalocean_droplet.deben2.ipv4_address
+  #value   = digitalocean_droplet.deben2.ipv4_address
   proxied = false
 }
 
