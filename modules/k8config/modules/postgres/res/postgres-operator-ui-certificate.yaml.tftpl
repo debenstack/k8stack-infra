@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: postgres-operator-ui-certificate
+  namespace: traefik
+spec:
+  secretName: postgres-operator-ui-certificate-secret
+  dnsNames:
+    - "postgres-operator.${domain}"
+  issuerRef:
+    name: letsencrypt-dev-cluster-issuer
+    kind: ClusterIssuer
