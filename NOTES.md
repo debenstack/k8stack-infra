@@ -372,3 +372,26 @@ metrics:
 ```
 
 All of the above is the minimum required in order for scraping to work
+
+# How To Drain Off A Node
+- https://stackoverflow.com/questions/39231880/kubernetes-api-get-pods-on-specific-nodes
+- https://spacelift.io/blog/kubectl-delete-pod
+
+Get a list of all your nodes
+```bash
+kubectl get nodes -o wide
+```
+
+Find out what is all running on your node:
+```bash
+kubectl get pods -A -o wide --field-selector spec.nodeName=<node name>
+```
+
+Drain the node
+```bash
+kubectl drain <node name> --delete-emptydir-data --ignore-daemonsets
+```
+This will ignore PVCs and Daemonsets on the node, don't include those parameters if you want to be stopped from that happening
+
+Once drained complete, go to your Cloud PRovder and terminate the node
+

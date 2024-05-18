@@ -149,7 +149,14 @@ crds:
     podLabels: {}
 
     # -- Node affinity constraints.
-    nodeAffinity: {}
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: resource-demand
+              operator: In
+              values:
+              - low
 
     # -- Security context for the hook containers
     securityContext:
@@ -499,7 +506,14 @@ webhooksCleanup:
   podLabels: {}
 
   # -- Node affinity constraints.
-  nodeAffinity: {}
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: resource-demand
+            operator: In
+            values:
+            - low
 
   # -- Security context for the hook containers
   securityContext:
@@ -554,7 +568,14 @@ policyReportsCleanup:
   podLabels: {}
 
   # -- Node affinity constraints.
-  nodeAffinity: {}
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: resource-demand
+            operator: In
+            values:
+            - low
 
   # -- Security context for the hook containers
   securityContext:
@@ -762,7 +783,14 @@ cleanupJobs:
     podAffinity: {}
 
     # -- Node affinity constraints.
-    nodeAffinity: {}
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: resource-demand
+              operator: In
+              values:
+              - low
 
   clusterAdmissionReports:
 
@@ -839,7 +867,14 @@ cleanupJobs:
     podAffinity: {}
 
     # -- Node affinity constraints.
-    nodeAffinity: {}
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: resource-demand
+              operator: In
+              values:
+              - low
 
 # Admission controller configuration
 admissionController:
@@ -970,9 +1005,9 @@ admissionController:
       path: /health/liveness
       port: 9443
       scheme: HTTPS
-    initialDelaySeconds: 15
+    initialDelaySeconds: 90
     periodSeconds: 30
-    timeoutSeconds: 5
+    timeoutSeconds: 10
     failureThreshold: 2
     successThreshold: 1
 
@@ -985,9 +1020,9 @@ admissionController:
       path: /health/readiness
       port: 9443
       scheme: HTTPS
-    initialDelaySeconds: 5
+    initialDelaySeconds: 90
     periodSeconds: 10
-    timeoutSeconds: 5
+    timeoutSeconds: 10
     failureThreshold: 6
     successThreshold: 1
 
@@ -1020,7 +1055,15 @@ admissionController:
   podAffinity: {}
 
   # -- Node affinity constraints.
-  nodeAffinity: {}
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+          - key: resource-demand
+            operator: In
+            values:
+            - high
 
   # -- Topology spread constraints.
   topologySpreadConstraints: []
@@ -1429,7 +1472,15 @@ backgroundController:
   podAffinity: {}
 
   # -- Node affinity constraints.
-  nodeAffinity: {}
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+          - key: resource-demand
+            operator: In
+            values:
+            - high
 
   # -- Topology spread constraints.
   topologySpreadConstraints: []
@@ -1686,9 +1737,9 @@ cleanupController:
       path: /health/liveness
       port: 9443
       scheme: HTTPS
-    initialDelaySeconds: 15
+    initialDelaySeconds: 90
     periodSeconds: 30
-    timeoutSeconds: 5
+    timeoutSeconds: 10
     failureThreshold: 2
     successThreshold: 1
 
@@ -1701,9 +1752,9 @@ cleanupController:
       path: /health/readiness
       port: 9443
       scheme: HTTPS
-    initialDelaySeconds: 5
+    initialDelaySeconds: 90
     periodSeconds: 10
-    timeoutSeconds: 5
+    timeoutSeconds: 10
     failureThreshold: 6
     successThreshold: 1
 
@@ -1736,7 +1787,14 @@ cleanupController:
   podAffinity: {}
 
   # -- Node affinity constraints.
-  nodeAffinity: {}
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: resource-demand
+            operator: In
+            values:
+            - low
 
   # -- Topology spread constraints.
   topologySpreadConstraints: []
@@ -2014,7 +2072,14 @@ reportsController:
   podAffinity: {}
 
   # -- Node affinity constraints.
-  nodeAffinity: {}
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: resource-demand
+            operator: In
+            values:
+            - low
 
   # -- Topology spread constraints.
   topologySpreadConstraints: []

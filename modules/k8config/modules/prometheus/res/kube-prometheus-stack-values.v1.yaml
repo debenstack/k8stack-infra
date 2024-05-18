@@ -564,7 +564,7 @@ alertmanager:
 
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
-    interval: ""
+    interval: 60s
 
     ## Additional labels
     ##
@@ -747,7 +747,15 @@ alertmanager:
     ## Storage is the definition of how storage will be used by the Alertmanager instances.
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/storage.md
     ##
-    storage: {}
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: do-block-storage
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 50Gi
     # volumeClaimTemplate:
     #   spec:
     #     storageClassName: gluster
@@ -786,9 +794,11 @@ alertmanager:
     ## Define resources requests and limits for single Pods.
     ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
     ##
-    resources: {}
-    # requests:
-    #   memory: 400Mi
+    resources:
+      requests:
+        memory: 400Mi
+    #  limits: 
+    #    memory: 256Mi
 
     ## Pod anti-affinity can prevent the scheduler from placing Prometheus replicas on the same node.
     ## The default value "soft" means that the scheduler should *prefer* to not schedule two replica pods onto the same node but no guarantee is provided.
@@ -1061,7 +1071,7 @@ grafana:
 
       ## URL of prometheus datasource
       ##
-      # url: http://prometheus-stack-prometheus:9090/
+      url: http://kube-prometheus-stack-prometheus.prometheus.svc.cluster.local:9090/
 
       ## Prometheus request timeout in seconds
       # timeout: 30
@@ -1148,7 +1158,7 @@ grafana:
 
     # Scrape interval. If not set, the Prometheus default scrape interval is used.
     #
-    interval: ""
+    interval: 60s
     scheme: http
     tlsConfig: {}
     scrapeTimeout: 30s
@@ -1179,7 +1189,7 @@ kubeApiServer:
   serviceMonitor:
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
-    interval: ""
+    interval: 60s
 
     ## SampleLimit defines per-scrape limit on number of scraped samples that will be accepted.
     ##
@@ -1257,7 +1267,7 @@ kubelet:
 
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
-    interval: ""
+    interval: 60s
 
     ## If true, Prometheus use (respect) labels provided by exporter.
     ##
@@ -1471,7 +1481,7 @@ kubeControllerManager:
     enabled: true
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
-    interval: ""
+    interval: 60s
 
     ## SampleLimit defines per-scrape limit on number of scraped samples that will be accepted.
     ##
@@ -1556,7 +1566,7 @@ coreDns:
     enabled: true
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
-    interval: ""
+    interval: 60s
 
     ## SampleLimit defines per-scrape limit on number of scraped samples that will be accepted.
     ##
@@ -1631,7 +1641,7 @@ kubeDns:
   serviceMonitor:
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
-    interval: ""
+    interval: 60s
 
     ## SampleLimit defines per-scrape limit on number of scraped samples that will be accepted.
     ##
@@ -1741,7 +1751,7 @@ kubeEtcd:
     enabled: true
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
-    interval: ""
+    interval: 60s
 
     ## SampleLimit defines per-scrape limit on number of scraped samples that will be accepted.
     ##
@@ -1834,7 +1844,7 @@ kubeScheduler:
     enabled: true
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
-    interval: ""
+    interval: 60s
 
     ## SampleLimit defines per-scrape limit on number of scraped samples that will be accepted.
     ##
@@ -1927,7 +1937,7 @@ kubeProxy:
     enabled: true
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
-    interval: ""
+    interval: 60s
 
     ## SampleLimit defines per-scrape limit on number of scraped samples that will be accepted.
     ##
@@ -2006,7 +2016,7 @@ kube-state-metrics:
 
       ## Scrape interval. If not set, the Prometheus default scrape interval is used.
       ##
-      interval: ""
+      interval: 60s
 
       ## SampleLimit defines per-scrape limit on number of scraped samples that will be accepted.
       ##
@@ -2098,7 +2108,7 @@ prometheus-node-exporter:
 
       ## Scrape interval. If not set, the Prometheus default scrape interval is used.
       ##
-      interval: ""
+      interval: 60s
 
       ## SampleLimit defines per-scrape limit on number of scraped samples that will be accepted.
       ##
@@ -2201,11 +2211,11 @@ prometheusOperator:
     namespaceSelector: {}
 
     deployment:
-      enabled: false
+      enabled: true
 
       ## Number of replicas
       ##
-      replicas: 1
+      replicas: 3
 
       ## Strategy of the deployment
       ##
@@ -2342,13 +2352,13 @@ prometheusOperator:
 
       ## Resource limits & requests
       ##
-      resources: {}
-      # limits:
-      #   cpu: 200m
-      #   memory: 200Mi
-      # requests:
-      #   cpu: 100m
-      #   memory: 100Mi
+      resources:
+        limits:
+         cpu: 200m
+         memory: 200Mi
+        requests:
+         cpu: 100m
+         memory: 100Mi
 
       # Required for use in managed kubernetes clusters (such as AWS EKS) with custom CNI (such as calico),
       # because control-plane managed by AWS cannot communicate with pods' IP CIDR and admission webhooks are not working
@@ -2611,7 +2621,7 @@ prometheusOperator:
 
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
-    interval: ""
+    interval: 60s
 
     ## SampleLimit defines per-scrape limit on number of scraped samples that will be accepted.
     ##
@@ -2655,13 +2665,13 @@ prometheusOperator:
 
   ## Resource limits & requests
   ##
-  resources: {}
-  # limits:
-  #   cpu: 200m
-  #   memory: 200Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 100Mi
+  resources:
+   limits:
+     cpu: 200m
+     memory: 200Mi
+   requests:
+     cpu: 100m
+     memory: 100Mi
 
   ## Operator Environment
   ##  env:
@@ -2800,13 +2810,13 @@ prometheusOperator:
     enableProbe: false
 
     # resource config for prometheusConfigReloader
-    resources: {}
-      # requests:
-      #   cpu: 200m
-      #   memory: 50Mi
-      # limits:
-      #   cpu: 200m
-      #   memory: 50Mi
+    resources:
+      requests:
+        cpu: 200m
+        memory: 50Mi
+      limits:
+        cpu: 200m
+        memory: 50Mi
 
   ## Thanos side-car image when configured
   ##
@@ -2931,7 +2941,7 @@ prometheus:
   # Needs thanosService to be enabled as well
   thanosServiceMonitor:
     enabled: false
-    interval: ""
+    interval: 60s
 
     ## Additional labels
     ##
@@ -3236,7 +3246,7 @@ prometheus:
 
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
-    interval: ""
+    interval: 30s
 
     ## Additional labels
     ##
@@ -3314,7 +3324,7 @@ prometheus:
     ## Defaults to 30s.
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/release-0.44/pkg/prometheus/promcfg.go#L180-L183
     ##
-    scrapeInterval: ""
+    scrapeInterval: 60s
 
     ## Number of seconds to wait for target to respond before erroring
     ##
@@ -3449,8 +3459,7 @@ prometheus:
     query: {}
 
     ## If nil, select own namespace. Namespaces to be selected for PrometheusRules discovery.
-    ruleNamespaceSelector:
-      any: true
+    ruleNamespaceSelector: {}
     ## Example which selects PrometheusRules in namespaces with label "prometheus" set to "somelabel"
     # ruleNamespaceSelector:
     #   matchLabels:
@@ -3460,7 +3469,7 @@ prometheus:
     ## prometheus resource to be created with selectors based on values in the helm deployment,
     ## which will also match the PrometheusRule resources created
     ##
-    ruleSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: true
 
     ## PrometheusRules to be selected for target discovery.
     ## If {}, select all PrometheusRules
@@ -3485,7 +3494,7 @@ prometheus:
     ## prometheus resource to be created with selectors based on values in the helm deployment,
     ## which will also match the servicemonitors created
     ##
-    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: true
 
     ## ServiceMonitors to be selected for target discovery.
     ## If {}, select all ServiceMonitors
@@ -3498,8 +3507,7 @@ prometheus:
 
     ## Namespaces to be selected for ServiceMonitor discovery.
     ##
-    serviceMonitorNamespaceSelector:
-      any: true
+    serviceMonitorNamespaceSelector: {}
     ## Example which selects ServiceMonitors in namespaces with label "prometheus" set to "somelabel"
     # serviceMonitorNamespaceSelector:
     #   matchLabels:
@@ -3509,7 +3517,7 @@ prometheus:
     ## prometheus resource to be created with selectors based on values in the helm deployment,
     ## which will also match the podmonitors created
     ##
-    podMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: true
 
     ## PodMonitors to be selected for target discovery.
     ## If {}, select all PodMonitors
@@ -3521,8 +3529,7 @@ prometheus:
     #     prometheus: somelabel
 
     ## If nil, select own namespace. Namespaces to be selected for PodMonitor discovery.
-    podMonitorNamespaceSelector:
-      any: true
+    podMonitorNamespaceSelector: {}
     ## Example which selects PodMonitor in namespaces with label "prometheus" set to "somelabel"
     # podMonitorNamespaceSelector:
     #   matchLabels:
@@ -3574,7 +3581,7 @@ prometheus:
 
     ## How long to retain metrics
     ##
-    retention: 10d
+    retention: 7d
 
     ## Maximum size of metrics
     ##
@@ -3672,14 +3679,24 @@ prometheus:
 
     ## Resource limits & requests
     ##
-    resources: {}
-    # requests:
-    #   memory: 400Mi
+    resources:
+      requests:
+        memory: 400Mi
+    #  limits:
+    #    memory: 200Mi
 
     ## Prometheus StorageSpec for persistent data
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/storage.md
     ##
-    storageSpec: {}
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: do-block-storage
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 30Gi
     ## Using PersistentVolumeClaim
     ##
     #  volumeClaimTemplate:
@@ -4269,7 +4286,7 @@ thanosRuler:
 
     ## Scrape interval. If not set, the Prometheus default scrape interval is used.
     ##
-    interval: ""
+    interval: 60s
 
     ## Additional labels
     ##
@@ -4405,7 +4422,15 @@ thanosRuler:
     ## Storage is the definition of how storage will be used by the ThanosRuler instances.
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/storage.md
     ##
-    storage: {}
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: do-block-storage
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 50Gi
     # volumeClaimTemplate:
     #   spec:
     #     storageClassName: gluster
@@ -4517,9 +4542,11 @@ thanosRuler:
     ## Define resources requests and limits for single Pods.
     ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
     ##
-    resources: {}
-    # requests:
-    #   memory: 400Mi
+    resources:
+      requests:
+        memory: 400Mi
+    #  limits:
+    #    memory: 200Mi
 
     ## Pod anti-affinity can prevent the scheduler from placing Prometheus replicas on the same node.
     ## The default value "soft" means that the scheduler should *prefer* to not schedule two replica pods onto the same node but no guarantee is provided.

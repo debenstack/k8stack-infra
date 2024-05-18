@@ -1,0 +1,36 @@
+# All Values: https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml
+
+
+installCRDs: false # this is deprecated but still necessary ! The other options won't install it
+
+crds:
+  enabled: false # whether to install the CRDs
+  keep: true # whether to keep the CRDs after cert-manager is removed
+
+# Updating this to include cloudflare since we use that for validation
+# Its likely to be up-to-date the fastest. Google is just an always good redundancy
+# CloudFlare DNS Servers:
+# - 1.1.1.1:53
+# - 1.0.0.1:53
+# Google DNS Servers:
+# - 8.8.8.8:53
+# - 8.8.4.4:53
+dns01RecursiveNameservers: "1.1.1.1:53,1.0.0.1:53,8.8.8.8:53,8.8.4.4:53"
+
+
+prometheus:
+  enabled: true
+  servicemonitor:
+    enabled: true
+
+
+affinity:
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+          - key: resource-demand
+            operator: In
+            values:
+              - low

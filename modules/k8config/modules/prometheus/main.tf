@@ -59,7 +59,7 @@ resource "helm_release" "kube-prometheus-stack" {
   dependency_update = true
 
   values = [
-    file("${abspath(path.module)}/res/kube-prometheus-stack-values.yaml")
+    file("${abspath(path.module)}/res/kube-prometheus-stack-values.v1.yaml")
   ]
 
   depends_on = [

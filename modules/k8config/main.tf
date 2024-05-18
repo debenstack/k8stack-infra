@@ -86,6 +86,7 @@ module "argocd" {
   ]
 }
 
+
 module "prometheus" {
   source = "./modules/prometheus"
 
@@ -104,6 +105,7 @@ module "prometheus" {
   ]
 }
 
+
 module "kyverno" {
   source = "./modules/kyverno"
 
@@ -113,7 +115,6 @@ module "kyverno" {
   }
 
   depends_on = [
-    module.prometheus,
     time_sleep.wait_60_seconds
   ]
 }
@@ -160,3 +161,4 @@ module "prometheus-adapter" {
     module.prometheus
   ]
 }
+

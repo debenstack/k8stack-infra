@@ -476,7 +476,9 @@ ingester:
   # -- Volumes to add to the ingester pods
   extraVolumes: []
   # -- Resource requests and limits for the ingester
-  resources: {}
+  resources:
+    requests:
+      memory: 100Mi
   # -- Containers to add to the ingester pods
   extraContainers: []
   # -- Init containers to add to the ingester pods
@@ -512,6 +514,15 @@ ingester:
               matchLabels:
                 {{- include "loki.ingesterSelectorLabels" . | nindent 12 }}
             topologyKey: failure-domain.beta.kubernetes.io/zone
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+            - key: resource-demand
+              operator: In
+              values:
+              - high
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: null
   # -- Max Surge for ingester pods
@@ -620,7 +631,9 @@ distributor:
   # -- Volumes to add to the distributor pods
   extraVolumes: []
   # -- Resource requests and limits for the distributor
-  resources: {}
+  resources:
+    requests:
+      memory: 50Mi
   # -- Containers to add to the distributor pods
   extraContainers: []
   # -- Grace period to allow the distributor to shutdown before it is killed
@@ -641,6 +654,16 @@ distributor:
               matchLabels:
                 {{- include "loki.distributorSelectorLabels" . | nindent 12 }}
             topologyKey: failure-domain.beta.kubernetes.io/zone
+          podAffinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+            - key: resource-demand
+              operator: In
+              values:
+              - high
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: null
   # -- Max Surge for distributor pods
@@ -723,7 +746,9 @@ querier:
   # -- Volumes to add to the querier pods
   extraVolumes: []
   # -- Resource requests and limits for the querier
-  resources: {}
+  resources:
+    requests: 
+      memory: 50Mi
   # -- Containers to add to the querier pods
   extraContainers: []
   # -- Init containers to add to the querier pods
@@ -755,6 +780,16 @@ querier:
               matchLabels:
                 {{- include "loki.querierSelectorLabels" . | nindent 12 }}
             topologyKey: failure-domain.beta.kubernetes.io/zone
+          podAffinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+            - key: resource-demand
+              operator: In
+              values:
+              - high
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: null
   # -- Max Surge for querier pods
@@ -852,7 +887,9 @@ queryFrontend:
   # -- Volumes to add to the query-frontend pods
   extraVolumes: []
   # -- Resource requests and limits for the query-frontend
-  resources: {}
+  resources:
+    requests: 
+      memory: 30Mi
   # -- Containers to add to the query-frontend pods
   extraContainers: []
   # -- Grace period to allow the query-frontend to shutdown before it is killed
@@ -873,6 +910,15 @@ queryFrontend:
               matchLabels:
                 {{- include "loki.queryFrontendSelectorLabels" . | nindent 12 }}
             topologyKey: failure-domain.beta.kubernetes.io/zone
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+            - key: resource-demand
+              operator: In
+              values:
+              - high
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: null
   # -- Node selector for query-frontend pods
@@ -944,6 +990,14 @@ queryScheduler:
               matchLabels:
                 {{- include "loki.querySchedulerSelectorLabels" . | nindent 12 }}
             topologyKey: failure-domain.beta.kubernetes.io/zone
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: resource-demand
+            operator: In
+            values:
+            - low
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: 1
   # -- Node selector for query-scheduler pods
@@ -1137,7 +1191,9 @@ gateway:
         - ALL
     allowPrivilegeEscalation: false
   # -- Resource requests and limits for the gateway
-  resources: {}
+  resources:
+    requests:
+      memory: 10Mi
   # -- Containers to add to the gateway pods
   extraContainers: []
   # -- Grace period to allow the gateway to shutdown before it is killed
@@ -1158,6 +1214,15 @@ gateway:
               matchLabels:
                 {{- include "loki.gatewaySelectorLabels" . | nindent 12 }}
             topologyKey: failure-domain.beta.kubernetes.io/zone
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+            - key: resource-demand
+              operator: In
+              values:
+              - high
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: null
   # -- Node selector for gateway pods
@@ -1416,6 +1481,14 @@ compactor:
               matchLabels:
                 {{- include "loki.compactorSelectorLabels" . | nindent 12 }}
             topologyKey: failure-domain.beta.kubernetes.io/zone
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: resource-demand
+            operator: In
+            values:
+            - low
   # -- Labels for compactor service
   serviceLabels: {}
   # -- Additional CLI args for the compactor
@@ -1438,7 +1511,9 @@ compactor:
   # -- liveness probe settings for ingester pods. If empty use `loki.livenessProbe`
   livenessProbe: {}
   # -- Resource requests and limits for the compactor
-  resources: {}
+  resources:
+    requests:
+      memory: 50Mi
   # -- Containers to add to the compactor pods
   extraContainers: []
   # -- Init containers to add to the compactor pods
@@ -1560,6 +1635,14 @@ ruler:
               matchLabels:
                 {{- include "loki.rulerSelectorLabels" . | nindent 12 }}
             topologyKey: failure-domain.beta.kubernetes.io/zone
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: resource-demand
+            operator: In
+            values:
+            - low
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: null
   # -- Node selector for ruler pods
@@ -1713,6 +1796,14 @@ indexGateway:
               matchLabels:
                 {{- include "loki.indexGatewaySelectorLabels" . | nindent 12 }}
             topologyKey: failure-domain.beta.kubernetes.io/zone
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: resource-demand
+            operator: In
+            values:
+            - low
   # -- Pod Disruption Budget maxUnavailable
   maxUnavailable: null
   # -- Node selector for index-gateway pods

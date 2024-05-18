@@ -148,10 +148,10 @@ readinessProbe:
 resources:
   limits:
     cpu: 200m
-    memory: 128Mi
+    memory: 100Mi
   requests:
-    cpu: 100m
-    memory: 128Mi
+    cpu: 30m
+    memory: 50Mi
 
 # -- The security context for pods
 podSecurityContext:
@@ -611,10 +611,10 @@ sidecar:
     # -- Resource requests and limits for sidecar config-reloader
     resources: {}
     #  limits:
-    #    cpu: 200m
+    #    cpu: 100m
     #    memory: 128Mi
     #  requests:
-    #    cpu: 100m
+    #    cpu: 5m
     #    memory: 128Mi
     config:
       # -- The port of the config-reloader server
