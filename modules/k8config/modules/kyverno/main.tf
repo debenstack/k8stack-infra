@@ -33,3 +33,12 @@ resource "helm_release" "kyverno" {
     file("${abspath(path.module)}/res/kyverno-values.yaml")
   ]
 }
+
+resource "kubectl_manifest" "kyverno-policies" {
+  for_each  = fileset("${abspath(path.module)}/res/policies", "*.yaml")
+  yaml_body = file("${abspath(path.module)}/res/policies/${each.value}")
+
+  depends_on = [
+    helm_release.kyverno
+  ]
+}
