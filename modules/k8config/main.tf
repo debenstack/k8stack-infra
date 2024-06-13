@@ -177,3 +177,21 @@ module "postgres-operator" {
     module.traefik
   ]
 }
+
+module "mysql-operator" {
+  source = "./modules/mysql-operator"
+
+  domain = var.domain
+
+  providers = {
+    helm       = helm
+    kubectl    = kubectl
+    kubernetes = kubernetes
+  }
+
+  depends_on = [
+    time_sleep.wait_60_seconds,
+    module.certmanager,
+    module.traefik
+  ]
+}

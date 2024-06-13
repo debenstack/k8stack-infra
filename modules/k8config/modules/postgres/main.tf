@@ -27,6 +27,7 @@ resource "helm_release" "postgres_operator" {
 
   repository = "https://opensource.zalando.com/postgres-operator/charts/postgres-operator"
   chart      = "postgres-operator"
+  version = "1.11.0"
 
   atomic = true
 
