@@ -6,24 +6,20 @@ provider "digitalocean" {
   spaces_secret_key = var.do_spaces_secret_access_key
 }
 
-data "digitalocean_kubernetes_cluster" "k8stack" {
-  name = module.k8infra.cluster_name
-}
-
 provider "kubernetes" {
-  host  = data.digitalocean_kubernetes_cluster.k8stack.endpoint
-  token = data.digitalocean_kubernetes_cluster.k8stack.kube_config[0].token
+  host  = module.k8infra.cluster_endpoint
+  token = module.k8infra.cluster_token
   cluster_ca_certificate = base64decode(
-    data.digitalocean_kubernetes_cluster.k8stack.kube_config[0].cluster_ca_certificate
+    module.k8infra.cluster_ca_certificate
   )
 }
 
 provider "helm" {
   kubernetes {
-    host  = data.digitalocean_kubernetes_cluster.k8stack.endpoint
-    token = data.digitalocean_kubernetes_cluster.k8stack.kube_config[0].token
+    host  = module.k8infra.cluster_endpoint
+    token = module.k8infra.cluster_token
     cluster_ca_certificate = base64decode(
-      data.digitalocean_kubernetes_cluster.k8stack.kube_config[0].cluster_ca_certificate
+      module.k8infra.cluster_ca_certificate
     )
   }
 }
@@ -34,10 +30,10 @@ provider "cloudflare" {
 }
 
 provider "kubectl" {
-  host  = data.digitalocean_kubernetes_cluster.k8stack.endpoint
-  token = data.digitalocean_kubernetes_cluster.k8stack.kube_config[0].token
+  host  = module.k8infra.cluster_endpoint
+  token = module.k8infra.cluster_token
   cluster_ca_certificate = base64decode(
-    data.digitalocean_kubernetes_cluster.k8stack.kube_config[0].cluster_ca_certificate
+    module.k8infra.cluster_ca_certificate
   )
   load_config_file  = false
   apply_retry_count = 3

@@ -29,7 +29,7 @@ resource "helm_release" "argocd" {
   dependency_update = true
 
   values = [
-    file("${abspath(path.module)}/res/argocd-values.yaml")
+    file("${abspath(path.module)}/res/argocd-values2.yaml")
   ]
 }
 

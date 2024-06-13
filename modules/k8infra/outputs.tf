@@ -6,6 +6,20 @@ output "cluster_name" {
   value = digitalocean_kubernetes_cluster.k8stack.name
 }
 
+output "cluster_endpoint" {
+  value = digitalocean_kubernetes_cluster.k8stack.endpoint
+}
+
+output "cluster_token" {
+  value = digitalocean_kubernetes_cluster.k8stack.kube_config[0].token
+}
+
+output "cluster_ca_certificate" {
+  value = digitalocean_kubernetes_cluster.k8stack.kube_config[0].cluster_ca_certificate
+}
+
+
+
 
 
 
