@@ -104,3 +104,13 @@ resource "kubectl_manifest" "clusterissuer_letsencrypt_dev" {
   ]
 }
 
+resource "kubectl_manifest" "clusterissuer_selfsigned" {
+  yaml_body = file("${abspath(path.module)}/res/clusterissuer-selfsigned.yaml")
+
+  override_namespace = "cert-manager"
+
+  depends_on = [
+    helm_release.cert_manager
+  ]
+}
+
