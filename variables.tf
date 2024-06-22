@@ -4,6 +4,7 @@ variable "do_token" {
   type        = string
 }
 
+/*
 variable "do_spaces_access_key_id" {
   description = "Digital Ocean Spaces Access Key Id"
   sensitive   = true
@@ -14,6 +15,28 @@ variable "do_spaces_secret_access_key" {
   description = "Digital Ocean Spaces Secret Access Key"
   sensitive   = true
   type        = string
+}
+*/
+
+variable "object_storage_access_key_id" {
+  description = "S3 Compatible Object Storage - Access Key Id"
+  sensitive   = true
+  type        = string
+  nullable    = false
+}
+
+variable "object_storage_secret_access_key" {
+  description = "S3 Compatible Object Storage - Secret Access Key"
+  sensitive   = true
+  type        = string
+  nullable    = false
+}
+
+variable "object_storage_region" {
+  description = "S3 Compatible Object Storage - Region"
+  sensitive   = true
+  type        = string
+  nullable    = false
 }
 
 

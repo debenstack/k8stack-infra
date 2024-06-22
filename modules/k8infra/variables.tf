@@ -9,3 +9,9 @@ variable "sub_domain" {
   sensitive   = true
   type        = string
 }
+
+variable "object_storage_region" {
+  description = "S3 Compatible Object Storage - Region"
+  sensitive   = true
+  type        = string
+}

@@ -43,6 +43,8 @@ module "k8infra" {
 
   domain     = var.domain
   sub_domain = var.sub_domain
+
+  object_storage_region = var.object_storage_region
 }
 
 resource "time_sleep" "wait_60_seconds" {
@@ -60,8 +62,11 @@ module "k8config" {
   cf_token = var.cf_token
   domain   = var.sub_domain != "" ? format("%s.%s", var.sub_domain, var.domain) : var.domain
 
-  s3_access_key_id     = var.do_spaces_access_key_id
-  s3_secret_access_key = var.do_spaces_secret_access_key
+  object_storage_access_key_id     = var.object_storage_access_key_id
+  object_storage_secret_access_key = var.object_storage_secret_access_key
+  object_storage_bucket_name       = module.k8infra.object_storage_bucket_name
+  object_storage_endpoint          = module.k8infra.object_storage_bucket_endpoint
+  object_storage_region            = module.k8infra.object_storage_bucket_region
 
   providers = {
     kubernetes = kubernetes

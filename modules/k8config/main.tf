@@ -121,8 +121,8 @@ module "kyverno" {
 module "loki" {
   source = "./modules/loki"
 
-  s3_access_key_id     = var.s3_access_key_id
-  s3_secret_access_key = var.s3_secret_access_key
+  s3_access_key_id     = var.object_storage_access_key_id
+  s3_secret_access_key = var.object_storage_secret_access_key
 
   providers = {
     helm = helm
@@ -163,8 +163,12 @@ module "prometheus-adapter" {
 module "postgres-operator" {
   source = "./modules/postgres"
 
-  domain = var.domain
-
+  domain                           = var.domain
+  object_storage_access_key_id     = var.object_storage_access_key_id
+  object_storage_secret_access_key = var.object_storage_secret_access_key
+  object_storage_endpoint          = var.object_storage_endpoint
+  object_storage_region            = var.object_storage_region
+  object_storage_bucket_name       = var.object_storage_bucket_name
   providers = {
     helm       = helm
     kubectl    = kubectl

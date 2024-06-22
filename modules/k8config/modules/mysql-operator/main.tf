@@ -26,7 +26,7 @@ resource "helm_release" "mysql_operator" {
 
   repository = "https://mysql.github.io/mysql-operator/"
   chart      = "mysql-operator"
-  version = "2.1.3"
+  version    = "2.1.3"
 
   atomic = true
 

@@ -91,7 +91,7 @@ resource "digitalocean_project" "k8stack-project" {
 
 resource "digitalocean_spaces_bucket" "k8stack-resources" {
   name   = "k8stack-resources"
-  region = "nyc3"
+  region = var.object_storage_region
   acl    = "private"
 
   # Deletes the bucket even if its not empty

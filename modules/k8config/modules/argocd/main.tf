@@ -55,3 +55,4 @@ resource "kubectl_manifest" "argocd_ingress" {
     kubectl_manifest.argocd_ingress_certificate
   ]
 }
+

@@ -60,31 +60,42 @@ podAnnotations:
 # https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#environment-variables
 # UI specific env variables can be found here: https://github.com/zalando/postgres-operator/blob/master/ui/operator_ui/main.py
 extraEnvs:
-  []
+
   # Exemple of settings to make snapshot view working in the ui when using AWS
-  # - name: WALE_S3_ENDPOINT
-  #   value: https+path://s3.us-east-1.amazonaws.com:443
-  # - name: SPILO_S3_BACKUP_PREFIX
-  #   value: spilo/
-  # - name: AWS_ACCESS_KEY_ID
-  #   valueFrom:
-  #     secretKeyRef:
-  #       name: <postgres operator secret with AWS token>
-  #       key: AWS_ACCESS_KEY_ID
-  # - name: AWS_SECRET_ACCESS_KEY
-  #   valueFrom:
-  #     secretKeyRef:
-  #       name: <postgres operator secret with AWS token>
-  #       key: AWS_SECRET_ACCESS_KEY
-  # - name: AWS_DEFAULT_REGION
-  #   valueFrom:
-  #     secretKeyRef:
-  #       name: <postgres operator secret with AWS token>
-  #       key: AWS_DEFAULT_REGION
-  # - name: SPILO_S3_BACKUP_BUCKET
-  #   value: <s3 bucket used by the operator>
-  # - name: "USE_AWS_INSTANCE_PROFILE"
-  #   value: "true"
+  - name: WALE_S3_ENDPOINT
+    valueFrom:
+      secretKeyRef:
+        name: postgres-s3-credentials
+        key: WALE_S3_ENDPOINT
+  - name: SPILO_S3_BACKUP_PREFIX
+    value: spilo/
+  - name: AWS_ACCESS_KEY_ID
+    valueFrom:
+      secretKeyRef:
+        name: postgres-s3-credentials
+        key: AWS_ACCESS_KEY_ID
+  - name: AWS_SECRET_ACCESS_KEY
+    valueFrom:
+      secretKeyRef:
+        name: postgres-s3-credentials
+        key: AWS_SECRET_ACCESS_KEY
+  - name: AWS_REGION
+    valueFrom:
+      secretKeyRef:
+        name: postgres-s3-credentials
+        key: AWS_REGION
+  - name: SPILO_S3_BACKUP_BUCKET
+    valueFrom:
+      secretKeyRef:
+        name: postgres-s3-credentials
+        key: WALE_S3_BUCKET
+  - name: "USE_AWS_INSTANCE_PROFILE"
+    value: "false"
+  - name: AWS_ENDPOINT
+    valueFrom:
+      secretKeyRef:
+        name: postgres-s3-credentials
+        key: AWS_ENDPOINT
 
 # configure UI service
 service:

@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: adventurewiki
+  namespace: argocd
+spec:
+  destination:
+    name: in-cluster
+    namespace: adventurewiki
+  project: projectterris
+  source:
+    path: helm
+    repoURL: https://github.com/debenstack/debenstack-adventurewiki.git
+    targetRevision: main
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
