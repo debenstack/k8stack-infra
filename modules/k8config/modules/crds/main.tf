@@ -35,27 +35,9 @@ resource "kubectl_manifest" "kyverno-crds" {
   server_side_apply = true
 }
 
-
-/* Elasticsearch */
-/*
-resource "helm_release" "elasticsearch-crds" {
-  name = "eck-operator"
-
-  repository = "https://helm.elastic.co"
-  chart      = "eck-operator-crds"
-
-  atomic           = true
-  create_namespace = true
-  namespace        = "elasticsearch"
-  version          = "2.12.1"
-
-  recreate_pods     = true
-  reuse_values      = true
-  force_update      = true
-  cleanup_on_fail   = true
-  dependency_update = true
-
-  #values = [
-  #  file("${abspath(path.module)}/res/elasticsearch-crd-values.yaml")
-  #]
-}*/
+/* MySQL Operator */
+resource "kubectl_manifest" "mysql-operator-crds" {
+  for_each          = toset(split("---", file("${abspath(path.module)}/res/mysql-operator-8.4.0-2.1.3/crd.yaml")))
+  yaml_body         = each.value
+  server_side_apply = true
+}

@@ -27,6 +27,7 @@ resource "helm_release" "postgres_operator" {
 
   repository = "https://opensource.zalando.com/postgres-operator/charts/postgres-operator"
   chart      = "postgres-operator"
+  version    = "1.11.0"
 
   atomic = true
 
@@ -44,7 +45,8 @@ resource "helm_release" "postgres_operator" {
   ]
 
   depends_on = [
-    kubernetes_namespace.postgres_namespace
+    kubernetes_namespace.postgres_namespace,
+    #kubernetes_secret.postgres_s3_credentials
   ]
 
 }
@@ -74,7 +76,8 @@ resource "helm_release" "postgres_operator_ui" {
 
   depends_on = [
     kubernetes_namespace.postgres_namespace,
-    helm_release.postgres_operator
+    helm_release.postgres_operator,
+    #kubernetes_secret.postgres_s3_credentials
   ]
 
 }
@@ -124,6 +127,28 @@ resource "kubectl_manifest" "postgres_operator_ui_ingress" {
     kubectl_manifest.postgres_operator_ui_certificate,
     helm_release.postgres_operator_ui,
     kubectl_manifest.postgres_operator_ui_auth_middleware
+  ]
+}
+
+resource "kubernetes_secret" "postgres_s3_credentials" {
+  metadata {
+    name      = "postgres-s3-credentials"
+    namespace = "postgres"
+  }
+
+  data = {
+    AWS_ACCESS_KEY_ID       = var.object_storage_access_key_id
+    AWS_SECRET_ACCESS_KEY   = var.object_storage_secret_access_key
+    AWS_REGION              = var.object_storage_region
+    AWS_ENDPOINT            = var.object_storage_endpoint
+    WALE_S3_ENDPOINT        = var.object_storage_endpoint
+    WALE_S3_BUCKET          = var.object_storage_bucket_name
+    WAL_BUCKET_SCOPE_PREFIX = ""
+    USE_WALG_BACKUP         = "true"
+  }
+
+  depends_on = [
+    kubernetes_namespace.postgres_namespace
   ]
 }
 

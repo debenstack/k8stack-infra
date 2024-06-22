@@ -19,18 +19,14 @@ output "cluster_ca_certificate" {
 }
 
 
-
-
-
-
-output "resource_bucket_name" {
+output "object_storage_bucket_name" {
   value = digitalocean_spaces_bucket.k8stack-resources.name
 }
 
-output "resource_bucket_endpoint" {
+output "object_storage_bucket_endpoint" {
   value = digitalocean_spaces_bucket.k8stack-resources.endpoint
 }
 
-output "resource_bucket_region" {
+output "object_storage_bucket_region" {
   value = digitalocean_spaces_bucket.k8stack-resources.region
 }
